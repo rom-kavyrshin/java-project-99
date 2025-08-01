@@ -2,6 +2,10 @@ plugins {
 	java
 	id("org.springframework.boot") version "3.5.4"
 	id("io.spring.dependency-management") version "1.1.7"
+	checkstyle
+	jacoco
+	id("org.sonarqube") version "6.0.1.5171"
+	id("io.freefair.lombok") version "8.14"
 }
 
 group = "hexlet.code"
@@ -11,6 +15,14 @@ java {
 	toolchain {
 		languageVersion = JavaLanguageVersion.of(21)
 	}
+}
+
+sonar {
+    properties {
+        property("sonar.projectKey", "rom-kavyrshin_java-project-99")
+        property("sonar.organization", "rom-kavyrshin")
+        property("sonar.host.url", "https://sonarcloud.io")
+    }
 }
 
 configurations {
@@ -34,4 +46,10 @@ dependencies {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+}
+
+tasks.jacocoTestReport {
+    reports {
+        xml.required = true
+    }
 }
