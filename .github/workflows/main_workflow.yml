@@ -56,6 +56,9 @@ jobs:
     - name: Generate coverage report
       run: make report
 
+    - name: Gradle version
+      run: gradle --version
+
     - name: Analyze only
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
