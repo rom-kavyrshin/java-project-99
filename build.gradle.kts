@@ -1,5 +1,5 @@
 plugins {
-	java
+	application
 	id("org.springframework.boot") version "3.5.4"
 	id("io.spring.dependency-management") version "1.1.7"
 	checkstyle
@@ -10,6 +10,10 @@ plugins {
 
 group = "hexlet.code"
 version = "0.0.1-SNAPSHOT"
+
+application {
+    mainClass = "hexlet.code.app.AppApplication"
+}
 
 java {
 	toolchain {
