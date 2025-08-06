@@ -22,4 +22,13 @@ test:
 report:
 	./gradlew jacocoTestReport
 
+image-build:
+	docker build -t rom-kavyrshin/java-project-99 -f Dockerfile .
+
+image-run:
+	docker run -p 8080:8080 rom-kavyrshin/java-project-99
+
+image-run-it:
+	docker run -it -p 8080:8080 rom-kavyrshin/java-project-99 bash
+
 .PHONY: build
