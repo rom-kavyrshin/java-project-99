@@ -11,7 +11,7 @@ import org.springframework.context.event.EventListener;
 @SpringBootApplication
 public class AppApplication {
 
-    private static final Logger logger = LoggerFactory.getLogger(AppApplication.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AppApplication.class);
 
     @Value("${spring.profiles.active}")
     private String activeProfile;
@@ -22,7 +22,7 @@ public class AppApplication {
 
     @EventListener(ApplicationReadyEvent.class)
     public void onApplicationReady() {
-        logger.info("Active profile {}", activeProfile);
+        LOG.info("Active profile {}", activeProfile);
     }
 
 }
