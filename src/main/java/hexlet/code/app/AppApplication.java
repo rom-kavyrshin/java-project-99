@@ -22,7 +22,7 @@ public class AppApplication {
 
     @EventListener(ApplicationReadyEvent.class)
     public void onApplicationReady() {
-        logger.info("Active profile " + activeProfile);
+        logger.info("Active profile {}", activeProfile);
     }
 
 }
