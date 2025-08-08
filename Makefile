@@ -1,4 +1,10 @@
-include local.env
+include general.env
+export
+
+ifneq (,$(wildcard local.env))
+    include local.env
+    export
+endif
 
 clean:
 	./gradlew clean
