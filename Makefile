@@ -1,3 +1,5 @@
+include local.env
+
 clean:
 	./gradlew clean
 
