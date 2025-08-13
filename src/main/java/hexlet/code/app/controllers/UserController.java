@@ -1,35 +1,44 @@
 package hexlet.code.app.controllers;
 
-import hexlet.code.app.model.User;
+import hexlet.code.app.dto.UserCreateDTO;
+import hexlet.code.app.dto.UserDTO;
+import hexlet.code.app.mapper.UserMapper;
 import hexlet.code.app.repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
 @RestController
+@RequestMapping("/users")
 public class UserController {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
-    @GetMapping(path = "/users")
-    public List<User> users() {
-        return userRepository.findAll();
+    public UserController(UserRepository userRepository, UserMapper userMapper) {
+        this.userRepository = userRepository;
+        this.userMapper = userMapper;
     }
 
-    @PostMapping(path = "/users")
-    public User createUser() {
-        var user = new User();
-        counter++;
-        user.setFirstName("Name" + counter);
-        user.setLastName("LastName" + counter);
-        user.setEmail("email" + counter);
-        return userRepository.save(user);
+    @GetMapping(path = "")
+    public List<UserDTO> users() {
+        return userRepository.findAll().stream()
+                .map(userMapper::map)
+                .toList();
     }
 
-    long counter = 0;
+    @PostMapping(path = "")
+    @ResponseStatus(HttpStatus.CREATED)
+    public UserDTO createUser(@RequestBody UserCreateDTO userCreateDTO) {
+        var user = userMapper.map(userCreateDTO);
+        userRepository.save(user);
+        return userMapper.map(user);
+    }
 
 }
