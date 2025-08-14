@@ -28,7 +28,7 @@ public class UserController {
     }
 
     @GetMapping(path = "")
-    public List<UserDTO> users() {
+    public List<UserDTO> index() {
         return userRepository.findAll().stream()
                 .map(userMapper::map)
                 .toList();
@@ -36,7 +36,7 @@ public class UserController {
 
     @PostMapping(path = "")
     @ResponseStatus(HttpStatus.CREATED)
-    public UserDTO createUser(@Valid @RequestBody UserCreateDTO userCreateDTO) {
+    public UserDTO create(@Valid @RequestBody UserCreateDTO userCreateDTO) {
         var user = userMapper.map(userCreateDTO);
         userRepository.save(user);
         return userMapper.map(user);
