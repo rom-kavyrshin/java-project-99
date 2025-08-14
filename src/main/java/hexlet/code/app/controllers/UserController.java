@@ -4,6 +4,7 @@ import hexlet.code.app.dto.UserCreateDTO;
 import hexlet.code.app.dto.UserDTO;
 import hexlet.code.app.mapper.UserMapper;
 import hexlet.code.app.repositories.UserRepository;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,7 +36,7 @@ public class UserController {
 
     @PostMapping(path = "")
     @ResponseStatus(HttpStatus.CREATED)
-    public UserDTO createUser(@RequestBody UserCreateDTO userCreateDTO) {
+    public UserDTO createUser(@Valid @RequestBody UserCreateDTO userCreateDTO) {
         var user = userMapper.map(userCreateDTO);
         userRepository.save(user);
         return userMapper.map(user);
