@@ -77,6 +77,40 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.email").value(equalTo(email)));
     }
 
+    @Test
+    public void testCreateWithInvalidEmail() throws Exception {
+        var email = "example.com";
+        var password = "somepassword";
+
+        var map = new HashMap<String, String>();
+        map.put("email", email);
+        map.put("password", password);
+
+        var request = post("/api/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(map));
+
+        mockMvc.perform(request)
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void testCreateWithInvalidPassword() throws Exception {
+        var email = "kavyrshin@example.com";
+        var password = "yo";
+
+        var map = new HashMap<String, String>();
+        map.put("email", email);
+        map.put("password", password);
+
+        var request = post("/api/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(map));
+
+        mockMvc.perform(request)
+                .andExpect(status().isBadRequest());
+    }
+
     private User createMockUser() {
         User user = new User();
         user.setFirstName(faker.name().firstName());
