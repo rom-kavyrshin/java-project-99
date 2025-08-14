@@ -60,6 +60,8 @@ dependencies {
 	testImplementation("org.hamcrest:hamcrest:3.0")
 	testImplementation("org.springframework.security:spring-security-test")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+	testImplementation("net.datafaker:datafaker:2.4.4")
+	testImplementation("org.instancio:instancio-junit:5.5.1")
 }
 
 tasks.withType<Test> {
