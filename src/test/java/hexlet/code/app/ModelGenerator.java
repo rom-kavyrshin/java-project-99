@@ -31,10 +31,10 @@ public class ModelGenerator {
                 .toModel();
 
         userUpdateDTOModel = Instancio.of(UserUpdateDTO.class)
-                .supply(Select.field(UserCreateDTO::getFirstName), () -> faker.name().firstName())
-                .supply(Select.field(UserCreateDTO::getLastName), () -> faker.name().lastName())
-                .supply(Select.field(UserCreateDTO::getEmail), () -> faker.internet().emailAddress())
-                .supply(Select.field(UserCreateDTO::getPassword), () -> faker.internet().password())
+                .supply(Select.field(UserUpdateDTO::getFirstName), () -> faker.name().firstName())
+                .supply(Select.field(UserUpdateDTO::getLastName), () -> faker.name().lastName())
+                .supply(Select.field(UserUpdateDTO::getEmail), () -> faker.internet().emailAddress())
+                .supply(Select.field(UserUpdateDTO::getPassword), () -> faker.internet().password())
                 .toModel();
     }
 }
