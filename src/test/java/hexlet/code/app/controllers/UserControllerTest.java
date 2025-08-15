@@ -1,9 +1,12 @@
 package hexlet.code.app.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import hexlet.code.app.ModelGenerator;
+import hexlet.code.app.dto.UserDTO;
 import hexlet.code.app.model.User;
 import hexlet.code.app.repositories.UserRepository;
 import net.datafaker.Faker;
+import org.instancio.Instancio;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +19,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -39,6 +43,9 @@ public class UserControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private ModelGenerator modelGenerator;
+
     @BeforeEach
     public void setupMocks() {
         ArrayList<User> users = new ArrayList<>();
@@ -61,20 +68,26 @@ public class UserControllerTest {
 
     @Test
     public void testCreate() throws Exception {
-        var email = "kavyrshin@example.com";
-        var password = "somepassword";
-
-        var map = new HashMap<String, String>();
-        map.put("email", email);
-        map.put("password", password);
+        var userCreateDTO = Instancio.of(modelGenerator.getUserCreateDTOModel()).create();
+        var userJson = objectMapper.writeValueAsString(userCreateDTO);
 
         var request = post("/api/users")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(map));
+                .content(userJson);
 
-        mockMvc.perform(request)
+        var result = mockMvc.perform(request)
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.email").value(equalTo(email)));
+                .andExpect(jsonPath("$.firstName").value(equalTo(userCreateDTO.getFirstName())))
+                .andExpect(jsonPath("$.lastName").value(equalTo(userCreateDTO.getLastName())))
+                .andExpect(jsonPath("$.email").value(equalTo(userCreateDTO.getEmail())))
+                .andReturn();
+
+        var resultUserDto = objectMapper.readValue(result.getResponse().getContentAsString(), UserDTO.class);
+        var userFromRepository = userRepository.findById(resultUserDto.getId()).orElseThrow();
+
+        assertThat(userCreateDTO.getFirstName(), equalTo(userFromRepository.getFirstName()));
+        assertThat(userCreateDTO.getLastName(), equalTo(userFromRepository.getLastName()));
+        assertThat(userCreateDTO.getEmail(), equalTo(userFromRepository.getEmail()));
     }
 
     @Test
