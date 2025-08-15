@@ -12,6 +12,7 @@ import org.instancio.Instancio;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openapitools.jackson.nullable.JsonNullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -162,15 +163,15 @@ public class UserControllerTest {
 
         mockMvc.perform(request)
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.firstName").value(equalTo(newUserData.getFirstName())))
-                .andExpect(jsonPath("$.lastName").value(equalTo(newUserData.getLastName())))
-                .andExpect(jsonPath("$.email").value(equalTo(newUserData.getEmail())));
+                .andExpect(jsonPath("$.firstName").value(equalTo(newUserData.getFirstName().get())))
+                .andExpect(jsonPath("$.lastName").value(equalTo(newUserData.getLastName().get())))
+                .andExpect(jsonPath("$.email").value(equalTo(newUserData.getEmail().get())));
 
         userForUpdate = userRepository.findById(userId).orElseThrow();
 
-        assertThat(userForUpdate.getFirstName(), equalTo(newUserData.getFirstName()));
-        assertThat(userForUpdate.getLastName(), equalTo(newUserData.getLastName()));
-        assertThat(userForUpdate.getEmail(), equalTo(newUserData.getEmail()));
+        assertThat(userForUpdate.getFirstName(), equalTo(newUserData.getFirstName().get()));
+        assertThat(userForUpdate.getLastName(), equalTo(newUserData.getLastName().get()));
+        assertThat(userForUpdate.getEmail(), equalTo(newUserData.getEmail().get()));
     }
 
     @Test
@@ -197,7 +198,7 @@ public class UserControllerTest {
 
         mockMvc.perform(request)
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.firstName").value(equalTo(newUserData.getFirstName())))
+                .andExpect(jsonPath("$.firstName").value(equalTo(newUserData.getFirstName().get())))
                 .andExpect(jsonPath("$.lastName").value(equalTo(userForUpdate.getLastName())))
                 .andExpect(jsonPath("$.email").value(equalTo(userForUpdate.getEmail())));
 
@@ -205,7 +206,7 @@ public class UserControllerTest {
 
         System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!! " + objectMapper.writeValueAsString(userForUpdate));
 
-        assertThat(userForUpdate.getFirstName(), equalTo(newUserData.getFirstName()));
+        assertThat(userForUpdate.getFirstName(), equalTo(newUserData.getFirstName().get()));
 
         checkMap.remove("firstName");
         ///////////////////////////
@@ -220,12 +221,12 @@ public class UserControllerTest {
         mockMvc.perform(request)
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.firstName").value(equalTo(userForUpdate.getFirstName())))
-                .andExpect(jsonPath("$.lastName").value(equalTo(newUserData.getLastName())))
+                .andExpect(jsonPath("$.lastName").value(equalTo(newUserData.getLastName().get())))
                 .andExpect(jsonPath("$.email").value(equalTo(userForUpdate.getEmail())));
 
         userForUpdate = userRepository.findById(userId).orElseThrow();
 
-        assertThat(userForUpdate.getLastName(), equalTo(newUserData.getLastName()));
+        assertThat(userForUpdate.getLastName(), equalTo(newUserData.getLastName().get()));
 
         checkMap.remove("lastName");
         ///////////////////////////
@@ -241,18 +242,18 @@ public class UserControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.firstName").value(equalTo(userForUpdate.getFirstName())))
                 .andExpect(jsonPath("$.lastName").value(equalTo(userForUpdate.getLastName())))
-                .andExpect(jsonPath("$.email").value(equalTo(newUserData.getEmail())));
+                .andExpect(jsonPath("$.email").value(equalTo(newUserData.getEmail().get())));
 
         userForUpdate = userRepository.findById(userId).orElseThrow();
 
-        assertThat(userForUpdate.getLastName(), equalTo(newUserData.getLastName()));
+        assertThat(userForUpdate.getLastName(), equalTo(newUserData.getLastName().get()));
 
         checkMap.remove("email");
 
         ///////////////////////////
 
         partNewUserData = new UserUpdateDTO();
-        partNewUserData.setLastName(null);
+        partNewUserData.setLastName(JsonNullable.of(null));
 
         request = put("/api/users/" + userId)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -261,7 +262,7 @@ public class UserControllerTest {
         mockMvc.perform(request)
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.firstName").value(equalTo(userForUpdate.getFirstName())))
-                .andExpect(jsonPath("$.lastName").value(equalTo(null)))
+                .andExpect(jsonPath("$.lastName").doesNotExist())
                 .andExpect(jsonPath("$.email").value(equalTo(userForUpdate.getEmail())));
 
         userForUpdate = userRepository.findById(userId).orElseThrow();
@@ -282,7 +283,7 @@ public class UserControllerTest {
         assertThat(userForUpdate.getPassword(), not(newPassword));
 
         var partNewUserData = new UserUpdateDTO();
-        partNewUserData.setPassword(newPassword);
+        partNewUserData.setPassword(JsonNullable.of(newPassword));
 
         var request = put("/api/users/" + userId)
                 .contentType(MediaType.APPLICATION_JSON)
