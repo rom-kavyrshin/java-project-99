@@ -89,6 +89,15 @@ public class UserControllerTest {
     }
 
     @Test
+    public void testShowWithNonExistId() throws Exception {
+        var userId = userRepository.findAll().getLast().getId();
+        userRepository.deleteById(userId);
+
+        mockMvc.perform(get("/api/users/" + userId))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
     public void testCreate() throws Exception {
         var userCreateDTO = Instancio.of(modelGenerator.getUserCreateDTOModel()).create();
         var userJson = objectMapper.writeValueAsString(userCreateDTO);
