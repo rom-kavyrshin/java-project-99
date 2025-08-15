@@ -3,6 +3,7 @@ package hexlet.code.app.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hexlet.code.app.ModelGenerator;
 import hexlet.code.app.dto.UserDTO;
+import hexlet.code.app.dto.UserUpdateDTO;
 import hexlet.code.app.model.User;
 import hexlet.code.app.repositories.UserRepository;
 import net.datafaker.Faker;
@@ -167,6 +168,30 @@ public class UserControllerTest {
         assertThat(userForUpdate.getFirstName(), equalTo(newUserData.getFirstName()));
         assertThat(userForUpdate.getLastName(), equalTo(newUserData.getLastName()));
         assertThat(userForUpdate.getEmail(), equalTo(newUserData.getEmail()));
+    }
+
+    @Test
+    public void testUpdatePassword() throws Exception {
+        var userId = userRepository.findAll().getLast().getId();
+        var userForUpdate = userRepository.findById(userId).orElseThrow();
+
+        var newPassword = faker.internet().password();
+
+        assertThat(userForUpdate.getPassword(), not(newPassword));
+
+        var partNewUserData = new UserUpdateDTO();
+        partNewUserData.setPassword(newPassword);
+
+        var request = put("/api/users/" + userId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(partNewUserData));
+
+        mockMvc.perform(request)
+                .andExpect(status().isOk());
+
+        userForUpdate = userRepository.findById(userId).orElseThrow();
+
+        assertThat(userForUpdate.getPassword(), equalTo(newPassword));
     }
 
     private User createMockUser() {
