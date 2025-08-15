@@ -145,8 +145,7 @@ public class UserControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.firstName").value(equalTo(newUserData.getEmail())))
                 .andExpect(jsonPath("$.lastName").value(equalTo(newUserData.getEmail())))
-                .andExpect(jsonPath("$.email").value(equalTo(newUserData.getEmail())))
-                .andReturn();
+                .andExpect(jsonPath("$.email").value(equalTo(newUserData.getEmail())));
 
         assertThat(userForUpdate.getFirstName(), equalTo(newUserData.getFirstName()));
         assertThat(userForUpdate.getLastName(), equalTo(newUserData.getLastName()));
