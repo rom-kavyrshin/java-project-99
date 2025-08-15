@@ -64,7 +64,7 @@ public class UserController {
 
     @DeleteMapping(path = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public UserDTO update(@PathVariable long id) {
+    public UserDTO delete(@PathVariable long id) {
         throw new RuntimeException();
     }
 
