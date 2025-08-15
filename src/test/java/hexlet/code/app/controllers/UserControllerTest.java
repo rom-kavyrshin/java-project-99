@@ -146,7 +146,7 @@ public class UserControllerTest {
         var userId = userRepository.findAll().getFirst().getId();
         var userForUpdate = userRepository.findById(userId).orElseThrow();
 
-        var newUserData = Instancio.of(modelGenerator.getUserCreateDTOModel()).create();
+        var newUserData = Instancio.of(modelGenerator.getUserUpdateDTOModel()).create();
 
         assertThat(userForUpdate.getFirstName(), not(newUserData.getFirstName()));
         assertThat(userForUpdate.getLastName(), not(newUserData.getLastName()));
