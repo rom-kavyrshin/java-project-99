@@ -1,6 +1,7 @@
 package hexlet.code.app;
 
 import hexlet.code.app.dto.UserCreateDTO;
+import hexlet.code.app.dto.UserUpdateDTO;
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import net.datafaker.Faker;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Component;
 public class ModelGenerator {
 
     private Model<UserCreateDTO> userCreateDTOModel;
+    private Model<UserUpdateDTO> userUpdateDTOModel;
 
     @Autowired
     private Faker faker;
@@ -22,6 +24,13 @@ public class ModelGenerator {
     @PostConstruct
     private void init() {
         userCreateDTOModel = Instancio.of(UserCreateDTO.class)
+                .supply(Select.field(UserCreateDTO::getFirstName), () -> faker.name().firstName())
+                .supply(Select.field(UserCreateDTO::getLastName), () -> faker.name().lastName())
+                .supply(Select.field(UserCreateDTO::getEmail), () -> faker.internet().emailAddress())
+                .supply(Select.field(UserCreateDTO::getPassword), () -> faker.internet().password())
+                .toModel();
+
+        userUpdateDTOModel = Instancio.of(UserUpdateDTO.class)
                 .supply(Select.field(UserCreateDTO::getFirstName), () -> faker.name().firstName())
                 .supply(Select.field(UserCreateDTO::getLastName), () -> faker.name().lastName())
                 .supply(Select.field(UserCreateDTO::getEmail), () -> faker.internet().emailAddress())
