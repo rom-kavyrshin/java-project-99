@@ -181,7 +181,7 @@ public class UserControllerTest {
 
         var newUserData = Instancio.of(modelGenerator.getUserUpdateDTOModel()).create();
         Map<String, Object> checkMap
-                = objectMapper.convertValue(newUserData, new TypeReference<HashMap<String, Object>>() {});
+                = objectMapper.convertValue(newUserData, new TypeReference<HashMap<String, Object>>() { });
 
         checkMap.remove("password");
 
