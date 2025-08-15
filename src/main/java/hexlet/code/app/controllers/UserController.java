@@ -41,7 +41,9 @@ public class UserController {
 
     @GetMapping(path = "/{id}")
     public UserDTO show(@PathVariable long id) {
-        throw new RuntimeException();
+        return userRepository.findById(id)
+                .map(userMapper::map)
+                .orElseThrow(() -> new ResourceNotFoundException("User with id " + id + " not found"));
     }
 
     @PostMapping(path = "")
