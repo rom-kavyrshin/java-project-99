@@ -21,9 +21,11 @@ import java.util.HashMap;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -122,6 +124,33 @@ public class UserControllerTest {
 
         mockMvc.perform(request)
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void testUpdate() throws Exception {
+        var userId = userRepository.findAll().getFirst().getId();
+        var userForUpdate = userRepository.findAll().getFirst();
+
+        var newUserData = Instancio.of(modelGenerator.getUserCreateDTOModel()).create();
+
+        assertThat(userForUpdate.getFirstName(), not(newUserData.getFirstName()));
+        assertThat(userForUpdate.getLastName(), not(newUserData.getLastName()));
+        assertThat(userForUpdate.getEmail(), not(newUserData.getEmail()));
+
+        var request = put("/api/users/" + userId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(newUserData));
+
+        mockMvc.perform(request)
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.firstName").value(equalTo(newUserData.getEmail())))
+                .andExpect(jsonPath("$.lastName").value(equalTo(newUserData.getEmail())))
+                .andExpect(jsonPath("$.email").value(equalTo(newUserData.getEmail())))
+                .andReturn();
+
+        assertThat(userForUpdate.getFirstName(), equalTo(newUserData.getFirstName()));
+        assertThat(userForUpdate.getLastName(), equalTo(newUserData.getLastName()));
+        assertThat(userForUpdate.getEmail(), equalTo(newUserData.getEmail()));
     }
 
     private User createMockUser() {
