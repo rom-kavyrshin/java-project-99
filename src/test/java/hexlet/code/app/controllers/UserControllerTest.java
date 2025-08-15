@@ -1,5 +1,6 @@
 package hexlet.code.app.controllers;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hexlet.code.app.ModelGenerator;
 import hexlet.code.app.dto.UserDTO;
@@ -8,6 +9,7 @@ import hexlet.code.app.model.User;
 import hexlet.code.app.repositories.UserRepository;
 import net.datafaker.Faker;
 import org.instancio.Instancio;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -168,6 +171,105 @@ public class UserControllerTest {
         assertThat(userForUpdate.getFirstName(), equalTo(newUserData.getFirstName()));
         assertThat(userForUpdate.getLastName(), equalTo(newUserData.getLastName()));
         assertThat(userForUpdate.getEmail(), equalTo(newUserData.getEmail()));
+    }
+
+    @Test
+    public void testPartlyUpdate() throws Exception {
+        var userId = userRepository.findAll().getLast().getId();
+        var userForUpdate = userRepository.findById(userId).orElseThrow();
+
+        var newUserData = Instancio.of(modelGenerator.getUserUpdateDTOModel()).create();
+        Map<String, Object> checkMap
+                = objectMapper.convertValue(newUserData, new TypeReference<HashMap<String, Object>>() {});
+
+        checkMap.remove("password");
+
+        assertThat(userForUpdate.getFirstName(), not(newUserData.getFirstName()));
+        assertThat(userForUpdate.getLastName(), not(newUserData.getLastName()));
+        assertThat(userForUpdate.getEmail(), not(newUserData.getEmail()));
+
+        var partNewUserData = new UserUpdateDTO();
+        partNewUserData.setFirstName(newUserData.getFirstName());
+
+        var request = put("/api/users/" + userId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(partNewUserData));
+
+        mockMvc.perform(request)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.firstName").value(equalTo(newUserData.getFirstName())))
+                .andExpect(jsonPath("$.lastName").value(equalTo(userForUpdate.getLastName())))
+                .andExpect(jsonPath("$.email").value(equalTo(userForUpdate.getEmail())));
+
+        userForUpdate = userRepository.findById(userId).orElseThrow();
+
+        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!! " + objectMapper.writeValueAsString(userForUpdate));
+
+        assertThat(userForUpdate.getFirstName(), equalTo("Roman"));
+
+        checkMap.remove("firstName");
+        ///////////////////////////
+
+        partNewUserData = new UserUpdateDTO();
+        partNewUserData.setLastName(newUserData.getLastName());
+
+        request = put("/api/users/" + userId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(partNewUserData));
+
+        mockMvc.perform(request)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.firstName").value(equalTo(userForUpdate.getFirstName())))
+                .andExpect(jsonPath("$.lastName").value(equalTo(newUserData.getLastName())))
+                .andExpect(jsonPath("$.email").value(equalTo(userForUpdate.getEmail())));
+
+        userForUpdate = userRepository.findById(userId).orElseThrow();
+
+        assertThat(userForUpdate.getLastName(), equalTo(newUserData.getLastName()));
+
+        checkMap.remove("lastName");
+        ///////////////////////////
+
+        partNewUserData = new UserUpdateDTO();
+        partNewUserData.setEmail(newUserData.getEmail());
+
+        request = put("/api/users/" + userId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(partNewUserData));
+
+        mockMvc.perform(request)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.firstName").value(equalTo(userForUpdate.getFirstName())))
+                .andExpect(jsonPath("$.lastName").value(equalTo(userForUpdate.getLastName())))
+                .andExpect(jsonPath("$.email").value(equalTo(newUserData.getEmail())));
+
+        userForUpdate = userRepository.findById(userId).orElseThrow();
+
+        assertThat(userForUpdate.getLastName(), equalTo(newUserData.getLastName()));
+
+        checkMap.remove("email");
+
+        ///////////////////////////
+
+        partNewUserData = new UserUpdateDTO();
+        partNewUserData.setLastName(null);
+
+        request = put("/api/users/" + userId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(partNewUserData));
+
+        mockMvc.perform(request)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.firstName").value(equalTo(userForUpdate.getFirstName())))
+                .andExpect(jsonPath("$.lastName").value(equalTo(null)))
+                .andExpect(jsonPath("$.email").value(equalTo(userForUpdate.getEmail())));
+
+        userForUpdate = userRepository.findById(userId).orElseThrow();
+
+        assertThat(userForUpdate.getLastName(), equalTo(null));
+
+        ///////////////////////////
+        Assertions.assertTrue(checkMap.isEmpty());
     }
 
     @Test
