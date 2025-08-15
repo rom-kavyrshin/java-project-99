@@ -205,7 +205,7 @@ public class UserControllerTest {
 
         System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!! " + objectMapper.writeValueAsString(userForUpdate));
 
-        assertThat(userForUpdate.getFirstName(), equalTo("Roman"));
+        assertThat(userForUpdate.getFirstName(), equalTo(newUserData.getFirstName()));
 
         checkMap.remove("firstName");
         ///////////////////////////
