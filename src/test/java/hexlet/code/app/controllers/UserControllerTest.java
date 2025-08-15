@@ -129,7 +129,7 @@ public class UserControllerTest {
     @Test
     public void testUpdate() throws Exception {
         var userId = userRepository.findAll().getFirst().getId();
-        var userForUpdate = userRepository.findAll().getFirst();
+        var userForUpdate = userRepository.findById(userId).orElseThrow();
 
         var newUserData = Instancio.of(modelGenerator.getUserCreateDTOModel()).create();
 
@@ -142,10 +142,12 @@ public class UserControllerTest {
                 .content(objectMapper.writeValueAsString(newUserData));
 
         mockMvc.perform(request)
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.firstName").value(equalTo(newUserData.getEmail())))
-                .andExpect(jsonPath("$.lastName").value(equalTo(newUserData.getEmail())))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.firstName").value(equalTo(newUserData.getFirstName())))
+                .andExpect(jsonPath("$.lastName").value(equalTo(newUserData.getLastName())))
                 .andExpect(jsonPath("$.email").value(equalTo(newUserData.getEmail())));
+
+        userForUpdate = userRepository.findById(userId).orElseThrow();
 
         assertThat(userForUpdate.getFirstName(), equalTo(newUserData.getFirstName()));
         assertThat(userForUpdate.getLastName(), equalTo(newUserData.getLastName()));
