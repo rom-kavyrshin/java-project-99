@@ -69,6 +69,21 @@ public class UserControllerTest {
     }
 
     @Test
+    public void testShow() throws Exception {
+        var userId = userRepository.findAll().getLast().getId();
+        var user = userRepository.findById(userId).orElseThrow();
+
+        mockMvc.perform(get("/api/users/" + userId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(equalTo(user.getId()), Long.class))
+                .andExpect(jsonPath("$.firstName").value(equalTo(user.getFirstName())))
+                .andExpect(jsonPath("$.lastName").value(equalTo(user.getLastName())))
+                .andExpect(jsonPath("$.email").value(equalTo(user.getEmail())))
+                .andExpect(jsonPath("$.createdAt").value(equalTo(user.getCreatedAt().toString())))
+                .andExpect(jsonPath("$.updatedAt").value(equalTo(user.getUpdatedAt().toString())));
+    }
+
+    @Test
     public void testCreate() throws Exception {
         var userCreateDTO = Instancio.of(modelGenerator.getUserCreateDTOModel()).create();
         var userJson = objectMapper.writeValueAsString(userCreateDTO);
