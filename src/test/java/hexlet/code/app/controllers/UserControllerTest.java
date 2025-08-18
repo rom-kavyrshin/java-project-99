@@ -19,7 +19,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -58,7 +57,7 @@ public class UserControllerTest {
         ArrayList<User> users = new ArrayList<>();
 
         for (int i = 0; i < 10; i++) {
-            users.add(createMockUser());
+            users.add(Instancio.of(modelGenerator.getUserModel()).create());
         }
 
         System.out.println(users);
@@ -304,17 +303,5 @@ public class UserControllerTest {
         userForUpdate = userRepository.findById(userId).orElseThrow();
 
         assertThat(userForUpdate.getPassword(), equalTo(newPassword));
-    }
-
-    private User createMockUser() {
-        User user = new User();
-        user.setFirstName(faker.name().firstName());
-        user.setLastName(faker.name().lastName());
-        user.setEmail(faker.internet().emailAddress());
-        user.setPassword(faker.internet().password());
-        user.setCreatedAt(LocalDateTime.now());
-        user.setUpdatedAt(LocalDateTime.now());
-
-        return user;
     }
 }

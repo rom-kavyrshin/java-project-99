@@ -2,6 +2,7 @@ package hexlet.code.app;
 
 import hexlet.code.app.dto.UserCreateDTO;
 import hexlet.code.app.dto.UserUpdateDTO;
+import hexlet.code.app.model.User;
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import net.datafaker.Faker;
@@ -18,6 +19,7 @@ public class ModelGenerator {
 
     private Model<UserCreateDTO> userCreateDTOModel;
     private Model<UserUpdateDTO> userUpdateDTOModel;
+    private Model<User> userModel;
 
     @Autowired
     private Faker faker;
@@ -36,6 +38,16 @@ public class ModelGenerator {
                 .supply(Select.field(UserUpdateDTO::getLastName), () -> JsonNullable.of(faker.name().lastName()))
                 .supply(Select.field(UserUpdateDTO::getEmail), () -> JsonNullable.of(faker.internet().emailAddress()))
                 .supply(Select.field(UserUpdateDTO::getPassword), () -> JsonNullable.of(faker.internet().password()))
+                .toModel();
+
+        userModel = Instancio.of(User.class)
+                .ignore(Select.field(User::getId))
+                .ignore(Select.field(User::getCreatedAt))
+                .ignore(Select.field(User::getUpdatedAt))
+                .supply(Select.field(User::getFirstName), () -> faker.name().firstName())
+                .supply(Select.field(User::getLastName), () -> faker.name().lastName())
+                .supply(Select.field(User::getEmail), () -> faker.internet().emailAddress())
+                .supply(Select.field(User::getPassword), () -> faker.internet().password())
                 .toModel();
     }
 }
