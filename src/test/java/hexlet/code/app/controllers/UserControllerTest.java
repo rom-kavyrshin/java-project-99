@@ -307,6 +307,30 @@ public class UserControllerTest {
     }
 
     @Test
+    public void testUpdateToNullRequiredFields() throws Exception {
+        var userId = userRepository.findAll().getLast().getId();
+        var userForUpdate = userRepository.findById(userId).orElseThrow();
+
+        String newEmail = null;
+
+        assertThat(userForUpdate.getEmail(), not(newEmail));
+
+        var partNewUserData = new UserUpdateDTO();
+        partNewUserData.setEmail(JsonNullable.of(newEmail));
+
+        var request = put("/api/users/" + userId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(partNewUserData));
+
+        mockMvc.perform(request)
+                .andExpect(status().isBadRequest());
+
+        userForUpdate = userRepository.findById(userId).orElseThrow();
+
+        assertThat(userForUpdate.getEmail(), not(newEmail));
+    }
+
+    @Test
     public void testDelete() throws Exception {
         var userId = userRepository.findAll().getLast().getId();
 
