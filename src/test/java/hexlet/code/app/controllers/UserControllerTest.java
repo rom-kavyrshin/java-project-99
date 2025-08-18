@@ -27,6 +27,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -303,5 +304,20 @@ public class UserControllerTest {
         userForUpdate = userRepository.findById(userId).orElseThrow();
 
         assertThat(userForUpdate.getPassword(), equalTo(newPassword));
+    }
+
+    @Test
+    public void testDelete() throws Exception {
+        var userId = userRepository.findAll().getLast().getId();
+
+        Assertions.assertTrue(userRepository.findById(userId).isPresent());
+
+        mockMvc.perform(get("/api/users/" + userId))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(delete("/api/users/" + userId))
+                .andExpect(status().isNoContent());
+
+        Assertions.assertTrue(userRepository.findById(userId).isEmpty());
     }
 }

@@ -66,8 +66,8 @@ public class UserController {
 
     @DeleteMapping(path = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public UserDTO delete(@PathVariable long id) {
-        throw new RuntimeException();
+    public void delete(@PathVariable long id) {
+        userRepository.deleteById(id);
     }
 
 }
