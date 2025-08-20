@@ -6,6 +6,7 @@ import hexlet.code.app.dto.UserUpdateDTO;
 import hexlet.code.app.exception.ResourceNotFoundException;
 import hexlet.code.app.mapper.UserMapper;
 import hexlet.code.app.repositories.UserRepository;
+import hexlet.code.app.util.CustomValidator;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,10 +16,13 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final CustomValidator validator;
 
-    public UserService(UserRepository userRepository, UserMapper userMapper) {
+
+    public UserService(UserRepository userRepository, UserMapper userMapper, CustomValidator validator) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
+        this.validator = validator;
     }
 
     public List<UserDTO> getAll() {
@@ -34,14 +38,16 @@ public class UserService {
     }
 
     public UserDTO create(UserCreateDTO userCreateDTO) {
-        // Validate UserCreateDTO
+        validator.validate(userCreateDTO);
+
         var user = userMapper.map(userCreateDTO);
         userRepository.save(user);
         return userMapper.map(user);
     }
 
     public UserDTO update(long id, UserUpdateDTO userUpdateDTO) {
-        // Validate UserUpdateDTO
+        validator.validate(userUpdateDTO);
+
         var user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User with id " + id + " not found"));
         userMapper.update(userUpdateDTO, user);
