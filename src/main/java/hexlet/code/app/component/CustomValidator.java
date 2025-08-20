@@ -1,4 +1,4 @@
-package hexlet.code.app.util;
+package hexlet.code.app.component;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;

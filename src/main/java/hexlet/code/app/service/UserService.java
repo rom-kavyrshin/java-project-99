@@ -6,7 +6,7 @@ import hexlet.code.app.dto.UserUpdateDTO;
 import hexlet.code.app.exception.ResourceNotFoundException;
 import hexlet.code.app.mapper.UserMapper;
 import hexlet.code.app.repositories.UserRepository;
-import hexlet.code.app.util.CustomValidator;
+import hexlet.code.app.component.CustomValidator;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
