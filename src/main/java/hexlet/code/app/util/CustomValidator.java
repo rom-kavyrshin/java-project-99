@@ -3,14 +3,16 @@ package hexlet.code.app.util;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class CustomValidator {
 
-    @Autowired
-    private Validator validator;
+    private final Validator validator;
+
+    public CustomValidator(Validator validator) {
+        this.validator = validator;
+    }
 
     public <T> void validate(T object, Class<?>... groups) throws ConstraintViolationException {
         var violations = validator.validate(object, groups);
