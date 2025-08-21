@@ -12,12 +12,11 @@ import org.springframework.stereotype.Component;
 public class DataInitializer implements ApplicationRunner {
 
     public static final String DEFAULT_USER_EMAIL = "hexlet@example.com";
-    public static final String DEFAULT_USER_PASSWORD_KEY = "DEFAULT_PASSWORD";
 
     private final UserService userService;
     private final UserRepository userRepository;
 
-    @Value("#{environment.DEFAULT_PASSWORD}")
+    @Value("${default-user.password}")
     private String defaultUserPassword;
 
     public DataInitializer(UserService userService, UserRepository userRepository) {
