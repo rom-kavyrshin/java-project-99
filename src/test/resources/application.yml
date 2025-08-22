@@ -10,3 +10,6 @@ spring:
       enabled: always
   application:
     name: "app"
+
+default-user:
+  password: "a123"
