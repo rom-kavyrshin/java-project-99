@@ -37,6 +37,12 @@ public class EncodersConfig {
     @Value("${rsa.public-key}")
     private RSAPublicKey publicKey;
 
+    @Value("${PRIVATE_KEY_PASSWORD}")
+    private String privateKeyPassword;
+
+    @Value("${PRIVATE_KEY_SALT}")
+    private String privateKeySalt;
+
     @Bean
     public PasswordEncoder getPasswordEncoder() {
         return new BCryptPasswordEncoder();
@@ -59,7 +65,7 @@ public class EncodersConfig {
         var srcFile = ResourceUtils.getFile("classpath:certs/private.pem.enc");
         String encryptedPrivatePem = Files.readString(srcFile.toPath(), StandardCharsets.UTF_8);
 
-        TextEncryptor decryptor = Encryptors.delux("somethin", "a1b2c3d4"); //TODO: Заменить на нормальный пароль и соль
+        TextEncryptor decryptor = Encryptors.delux(privateKeyPassword, privateKeySalt);
         String decryptedPem = decryptor.decrypt(encryptedPrivatePem);
 
         String cleanPem = decryptedPem
