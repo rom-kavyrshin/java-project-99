@@ -59,7 +59,7 @@ public class EncodersConfig {
         var srcFile = ResourceUtils.getFile("classpath:certs/private.pem.enc");
         String encryptedPrivatePem = Files.readString(srcFile.toPath(), StandardCharsets.UTF_8);
 
-        TextEncryptor decryptor = Encryptors.delux("somethin", "a1b2c3d4");
+        TextEncryptor decryptor = Encryptors.delux("somethin", "a1b2c3d4"); //TODO: Заменить на нормальный пароль и соль
         String decryptedPem = decryptor.decrypt(encryptedPrivatePem);
 
         String cleanPem = decryptedPem
