@@ -11,3 +11,6 @@ spring:
 
 default-user:
   password: ${DEFAULT_PASSWORD}
+
+rsa:
+  public-key: classpath:certs/public.pem
