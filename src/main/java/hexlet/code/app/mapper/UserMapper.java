@@ -42,7 +42,7 @@ public abstract class UserMapper {
 
     @BeforeMapping
     public void hashPassword(UserUpdateDTO dto) {
-        if (dto.getPassword().isPresent()) {
+        if (dto.getPassword() != null && dto.getPassword().isPresent()) {
             var password = dto.getPassword().get();
             dto.setPassword(JsonNullable.of(passwordEncoder.encode(password)));
         }
