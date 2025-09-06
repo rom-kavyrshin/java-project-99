@@ -53,6 +53,26 @@ public class UserControllerTest {
     @Autowired
     private ModelGenerator modelGenerator;
 
+    private static String token;
+
+    @BeforeEach
+    public void setupToken() throws Exception {
+        String loginJson = """
+                {
+                	"username": "hexlet@example.com",
+                	"password": "a123"
+                }
+                """;
+
+        var request = post("/api/login").contentType(MediaType.APPLICATION_JSON).content(loginJson);
+
+        var result = mockMvc.perform(request)
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        token = "Bearer " + result;
+    }
+
     @BeforeEach
     public void setupMocks() {
         ArrayList<User> users = new ArrayList<>();
@@ -68,9 +88,9 @@ public class UserControllerTest {
 
     @Test
     public void testIndex() throws Exception {
-        mockMvc.perform(get("/api/users"))
+        mockMvc.perform(get("/api/users").header("Authorization", token))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").value(hasSize(10)));
+                .andExpect(jsonPath("$").value(hasSize(11)));
     }
 
     @Test
@@ -78,7 +98,7 @@ public class UserControllerTest {
         var userId = userRepository.findAll().getLast().getId();
         var user = userRepository.findById(userId).orElseThrow();
 
-        mockMvc.perform(get("/api/users/" + userId))
+        mockMvc.perform(get("/api/users/" + userId).header("Authorization", token))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(equalTo(user.getId()), Long.class))
                 .andExpect(jsonPath("$.firstName").value(equalTo(user.getFirstName())))
@@ -93,7 +113,7 @@ public class UserControllerTest {
         var userId = userRepository.findAll().getLast().getId();
         userRepository.deleteById(userId);
 
-        mockMvc.perform(get("/api/users/" + userId))
+        mockMvc.perform(get("/api/users/" + userId).header("Authorization", token))
                 .andExpect(status().isNotFound());
     }
 
@@ -103,6 +123,7 @@ public class UserControllerTest {
         var userJson = objectMapper.writeValueAsString(userCreateDTO);
 
         var request = post("/api/users")
+                .header("Authorization", token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(userJson);
 
@@ -131,6 +152,7 @@ public class UserControllerTest {
         map.put("password", password);
 
         var request = post("/api/users")
+                .header("Authorization", token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(map));
 
@@ -148,6 +170,7 @@ public class UserControllerTest {
         map.put("password", password);
 
         var request = post("/api/users")
+                .header("Authorization", token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(map));
 
@@ -167,6 +190,7 @@ public class UserControllerTest {
         assertThat(userForUpdate.getEmail(), not(newUserData.getEmail()));
 
         var request = put("/api/users/" + userId)
+                .header("Authorization", token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(newUserData));
 
@@ -202,6 +226,7 @@ public class UserControllerTest {
         partNewUserData.setFirstName(newUserData.getFirstName());
 
         var request = put("/api/users/" + userId)
+                .header("Authorization", token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(partNewUserData));
 
@@ -224,6 +249,7 @@ public class UserControllerTest {
         partNewUserData.setLastName(newUserData.getLastName());
 
         request = put("/api/users/" + userId)
+                .header("Authorization", token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(partNewUserData));
 
@@ -244,6 +270,7 @@ public class UserControllerTest {
         partNewUserData.setEmail(newUserData.getEmail());
 
         request = put("/api/users/" + userId)
+                .header("Authorization", token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(partNewUserData));
 
@@ -265,6 +292,7 @@ public class UserControllerTest {
         partNewUserData.setLastName(JsonNullable.of(null));
 
         request = put("/api/users/" + userId)
+                .header("Authorization", token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(partNewUserData));
 
@@ -295,6 +323,7 @@ public class UserControllerTest {
         partNewUserData.setPassword(JsonNullable.of(newPassword));
 
         var request = put("/api/users/" + userId)
+                .header("Authorization", token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(partNewUserData));
 
@@ -319,6 +348,7 @@ public class UserControllerTest {
         partNewUserData.setEmail(JsonNullable.of(newEmail));
 
         var request = put("/api/users/" + userId)
+                .header("Authorization", token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(partNewUserData));
 
@@ -343,6 +373,7 @@ public class UserControllerTest {
         partNewUserData.setEmail(JsonNullable.of(newEmail));
 
         var request = put("/api/users/" + userId)
+                .header("Authorization", token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(partNewUserData));
 
@@ -360,10 +391,10 @@ public class UserControllerTest {
 
         Assertions.assertTrue(userRepository.findById(userId).isPresent());
 
-        mockMvc.perform(get("/api/users/" + userId))
+        mockMvc.perform(get("/api/users/" + userId).header("Authorization", token))
                 .andExpect(status().isOk());
 
-        mockMvc.perform(delete("/api/users/" + userId))
+        mockMvc.perform(delete("/api/users/" + userId).header("Authorization", token))
                 .andExpect(status().isNoContent());
 
         Assertions.assertTrue(userRepository.findById(userId).isEmpty());
