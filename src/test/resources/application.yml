@@ -13,3 +13,10 @@ spring:
 
 default-user:
   password: "a123"
+
+rsa:
+  public-key: classpath:certs/public.pem
+#  private-key: classpath:certs/private.pem.enc
+
+PRIVATE_KEY_PASSWORD: weaKPa55w0rd
+PRIVATE_KEY_SALT: c036d7ae55bcaf25
