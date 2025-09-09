@@ -64,8 +64,8 @@ public class UserControllerTest {
     public void setupToken() throws Exception {
         String loginJson = """
                 {
-                	"username": "hexlet@example.com",
-                	"password": "a123"
+                "username": "hexlet@example.com",
+                "password": "a123"
                 }
                 """;
 

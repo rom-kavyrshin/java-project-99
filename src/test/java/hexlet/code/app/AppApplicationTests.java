@@ -24,8 +24,8 @@ class AppApplicationTests {
         if (token == null) {
             String loginJson = """
                     {
-                    	"username": "hexlet@example.com",
-                    	"password": "a123"
+                    "username": "hexlet@example.com",
+                    "password": "a123"
                     }
                     """;
 

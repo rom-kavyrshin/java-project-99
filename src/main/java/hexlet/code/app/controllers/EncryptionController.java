@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.IOException;
 import java.util.Map;
 
 @RestController
@@ -19,7 +18,7 @@ public class EncryptionController {
 
     @PostMapping(path = "/encrypt")
     @ResponseStatus(HttpStatus.CREATED)
-    public Map<String, String> encrypt(@RequestParam String clearText, @RequestParam String password) throws IOException {
+    public Map<String, String> encrypt(@RequestParam String clearText, @RequestParam String password) {
         String generatedSalt = KeyGenerators.string().generateKey();
 
         TextEncryptor encryptor = Encryptors.delux(password, generatedSalt);
@@ -34,10 +33,8 @@ public class EncryptionController {
             @RequestParam String password,
             @RequestParam String salt,
             @RequestParam String encryptedText
-    ) throws IOException {
+    ) {
         TextEncryptor decryptor = Encryptors.delux(password, salt);
-        String clearText = decryptor.decrypt(encryptedText);
-
-        return clearText;
+        return decryptor.decrypt(encryptedText);
     }
 }
