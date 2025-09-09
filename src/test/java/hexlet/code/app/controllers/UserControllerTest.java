@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.ArrayList;
@@ -53,6 +54,9 @@ public class UserControllerTest {
 
     @Autowired
     private ModelGenerator modelGenerator;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     private static String token;
 
@@ -318,7 +322,7 @@ public class UserControllerTest {
 
         var newPassword = faker.internet().password();
 
-        assertThat(userForUpdate.getPassword(), not(newPassword));
+        assertFalse(passwordEncoder.matches(newPassword, userForUpdate.getPassword()));
 
         var partNewUserData = new UserUpdateDTO();
         partNewUserData.setPassword(JsonNullable.of(newPassword));
@@ -333,7 +337,7 @@ public class UserControllerTest {
 
         userForUpdate = userRepository.findById(userId).orElseThrow();
 
-        assertThat(userForUpdate.getPassword(), equalTo(newPassword));
+        assertTrue(passwordEncoder.matches(newPassword, userForUpdate.getPassword()));
     }
 
     @Test
