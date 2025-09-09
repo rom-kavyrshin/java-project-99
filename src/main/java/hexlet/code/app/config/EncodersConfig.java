@@ -43,6 +43,9 @@ public class EncodersConfig {
     @Value("${PRIVATE_KEY_SALT}")
     private String privateKeySalt;
 
+    @Value("${rsa.private-key-path}")
+    private String privateKeyPath;
+
     @Bean
     public PasswordEncoder getPasswordEncoder() {
         return new BCryptPasswordEncoder();
@@ -62,7 +65,7 @@ public class EncodersConfig {
 
     @Bean
     RsaKeyProperties rsaKeyProperties() throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
-        var srcFile = ResourceUtils.getFile("classpath:certs/private.pem.enc");
+        var srcFile = ResourceUtils.getFile(privateKeyPath);
         String encryptedPrivatePem = Files.readString(srcFile.toPath(), StandardCharsets.UTF_8);
 
         TextEncryptor decryptor = Encryptors.delux(privateKeyPassword, privateKeySalt);
