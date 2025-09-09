@@ -9,7 +9,6 @@ import hexlet.code.app.model.User;
 import hexlet.code.app.repositories.UserRepository;
 import net.datafaker.Faker;
 import org.instancio.Instancio;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openapitools.jackson.nullable.JsonNullable;
@@ -27,6 +26,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -307,7 +308,7 @@ public class UserControllerTest {
         assertThat(userForUpdate.getLastName(), equalTo(null));
 
         ///////////////////////////
-        Assertions.assertTrue(checkMap.isEmpty());
+        assertTrue(checkMap.isEmpty());
     }
 
     @Test
@@ -389,7 +390,7 @@ public class UserControllerTest {
     public void testDelete() throws Exception {
         var userId = userRepository.findAll().getLast().getId();
 
-        Assertions.assertTrue(userRepository.findById(userId).isPresent());
+        assertTrue(userRepository.findById(userId).isPresent());
 
         mockMvc.perform(get("/api/users/" + userId).header("Authorization", token))
                 .andExpect(status().isOk());
@@ -397,6 +398,6 @@ public class UserControllerTest {
         mockMvc.perform(delete("/api/users/" + userId).header("Authorization", token))
                 .andExpect(status().isNoContent());
 
-        Assertions.assertTrue(userRepository.findById(userId).isEmpty());
+        assertTrue(userRepository.findById(userId).isEmpty());
     }
 }
