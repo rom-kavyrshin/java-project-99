@@ -42,6 +42,7 @@ repositories {
 
 dependencies {
 	annotationProcessor("org.projectlombok:lombok")
+    annotationProcessor("org.mapstruct:mapstruct-processor:1.6.3")
 	compileOnly("org.projectlombok:lombok")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 	runtimeOnly("com.h2database:h2:2.3.232")
@@ -52,18 +53,17 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.postgresql:postgresql:42.7.7")
 	implementation("org.mapstruct:mapstruct:1.6.3")
-	annotationProcessor("org.mapstruct:mapstruct-processor:1.6.3")
 	implementation("org.openapitools:jackson-databind-nullable:0.2.6")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
 
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.springframework:spring-test:6.2.9")
 	testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
 	testImplementation("net.javacrumbs.json-unit:json-unit-assertj:4.1.1")
 	testImplementation("org.hamcrest:hamcrest:3.0")
 	testImplementation("org.springframework.security:spring-security-test")
-	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	testImplementation("net.datafaker:datafaker:2.4.4")
 	testImplementation("org.instancio:instancio-junit:5.5.1")
 }

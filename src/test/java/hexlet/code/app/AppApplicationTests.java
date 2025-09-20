@@ -20,7 +20,7 @@ class AppApplicationTests {
     private static String token;
 
     @BeforeEach
-    public void setupToken() throws Exception {
+    void setupToken() {
         if (token == null) {
             String loginJson = """
                     {

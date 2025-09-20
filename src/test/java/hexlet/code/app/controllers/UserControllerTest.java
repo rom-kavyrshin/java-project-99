@@ -61,7 +61,7 @@ public class UserControllerTest {
     private static String token;
 
     @BeforeEach
-    public void setupToken() throws Exception {
+    void setupToken() throws Exception {
         String loginJson = """
                 {
                 "username": "hexlet@example.com",
@@ -79,7 +79,7 @@ public class UserControllerTest {
     }
 
     @BeforeEach
-    public void setupMocks() {
+    void setupMocks() {
         ArrayList<User> users = new ArrayList<>();
 
         for (int i = 0; i < 10; i++) {
@@ -92,14 +92,14 @@ public class UserControllerTest {
     }
 
     @Test
-    public void testIndex() throws Exception {
+    void testIndex() throws Exception {
         mockMvc.perform(get("/api/users").header("Authorization", token))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").value(hasSize(11)));
     }
 
     @Test
-    public void testShow() throws Exception {
+    void testShow() throws Exception {
         var userId = userRepository.findAll().getLast().getId();
         var user = userRepository.findById(userId).orElseThrow();
 
@@ -114,7 +114,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void testShowWithNonExistId() throws Exception {
+    void testShowWithNonExistId() throws Exception {
         var userId = userRepository.findAll().getLast().getId();
         userRepository.deleteById(userId);
 
@@ -123,7 +123,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void testCreate() throws Exception {
+    void testCreate() throws Exception {
         var userCreateDTO = Instancio.of(modelGenerator.getUserCreateDTOModel()).create();
         var userJson = objectMapper.writeValueAsString(userCreateDTO);
 
@@ -148,7 +148,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void testCreateWithInvalidEmail() throws Exception {
+    void testCreateWithInvalidEmail() throws Exception {
         var email = "example.com";
         var password = "somepassword";
 
@@ -166,7 +166,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void testCreateWithInvalidPassword() throws Exception {
+    void testCreateWithInvalidPassword() throws Exception {
         var email = "kavyrshin@example.com";
         var password = "yo";
 
@@ -184,7 +184,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void testUpdate() throws Exception {
+    void testUpdate() throws Exception {
         var userId = userRepository.findAll().getFirst().getId();
         var userForUpdate = userRepository.findById(userId).orElseThrow();
 
@@ -213,7 +213,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void testPartlyUpdate() throws Exception {
+    void testPartlyUpdate() throws Exception {
         var userId = userRepository.findAll().getLast().getId();
         var userForUpdate = userRepository.findById(userId).orElseThrow();
 
@@ -248,7 +248,7 @@ public class UserControllerTest {
         assertThat(userForUpdate.getFirstName(), equalTo(newUserData.getFirstName().get()));
 
         checkMap.remove("firstName");
-        ///////////////////////////
+        /*--------------------------------*/
 
         partNewUserData = new UserUpdateDTO();
         partNewUserData.setLastName(newUserData.getLastName());
@@ -269,7 +269,7 @@ public class UserControllerTest {
         assertThat(userForUpdate.getLastName(), equalTo(newUserData.getLastName().get()));
 
         checkMap.remove("lastName");
-        ///////////////////////////
+        /*--------------------------------*/
 
         partNewUserData = new UserUpdateDTO();
         partNewUserData.setEmail(newUserData.getEmail());
@@ -291,7 +291,7 @@ public class UserControllerTest {
 
         checkMap.remove("email");
 
-        ///////////////////////////
+        /*--------------------------------*/
 
         partNewUserData = new UserUpdateDTO();
         partNewUserData.setLastName(JsonNullable.of(null));
@@ -311,12 +311,12 @@ public class UserControllerTest {
 
         assertThat(userForUpdate.getLastName(), equalTo(null));
 
-        ///////////////////////////
+        /*--------------------------------*/
         assertTrue(checkMap.isEmpty());
     }
 
     @Test
-    public void testUpdatePassword() throws Exception {
+    void testUpdatePassword() throws Exception {
         var userId = userRepository.findAll().getLast().getId();
         var userForUpdate = userRepository.findById(userId).orElseThrow();
 
@@ -341,7 +341,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void testUpdateToNullRequiredFields() throws Exception {
+    void testUpdateToNullRequiredFields() throws Exception {
         var userId = userRepository.findAll().getLast().getId();
         var userForUpdate = userRepository.findById(userId).orElseThrow();
 
@@ -366,7 +366,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void testUpdateToInvalidEmail() throws Exception {
+    void testUpdateToInvalidEmail() throws Exception {
         var userId = userRepository.findAll().getLast().getId();
         var userForUpdate = userRepository.findById(userId).orElseThrow();
 
@@ -391,7 +391,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void testDelete() throws Exception {
+    void testDelete() throws Exception {
         var userId = userRepository.findAll().getLast().getId();
 
         assertTrue(userRepository.findById(userId).isPresent());
