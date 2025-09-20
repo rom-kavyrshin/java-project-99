@@ -23,7 +23,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 )
 public abstract class UserMapper {
 
-    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Mapping(source = "password", target = "passwordDigest")
@@ -33,6 +32,11 @@ public abstract class UserMapper {
 
     @Mapping(source = "password", target = "passwordDigest")
     public abstract void update(UserUpdateDTO dto, @MappingTarget User model);
+
+    @Autowired
+    public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @BeforeMapping
     public void hashPassword(UserCreateDTO dto) {
