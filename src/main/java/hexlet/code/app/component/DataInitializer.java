@@ -25,7 +25,7 @@ public class DataInitializer implements ApplicationRunner {
     }
 
     @Override
-    public void run(ApplicationArguments args) throws Exception {
+    public void run(ApplicationArguments args) {
         if (!userRepository.existsByEmail(DEFAULT_USER_EMAIL)) {
             var user = new UserCreateDTO();
             user.setEmail(DEFAULT_USER_EMAIL);
