@@ -51,7 +51,8 @@ public class UserControllerSecurityTest {
     private PasswordEncoder passwordEncoder;
 
     private static String token;
-    private static final int userSize = 10;
+    private static final int USER_LIST_SIZE = 10;
+    private static final int MIDDLE_OF_THE_LIST = USER_LIST_SIZE / 2;
 
     private UserCreateDTO testUser;
     private String testUserPassword;
@@ -63,7 +64,7 @@ public class UserControllerSecurityTest {
     }
 
     void setupMocks() {
-        for (int i = 0; i < userSize; i++) {
+        for (int i = 0; i < USER_LIST_SIZE; i++) {
             userService.create(Instancio.of(modelGenerator.getUserCreateDTOModel()).create());
         }
 
@@ -90,7 +91,7 @@ public class UserControllerSecurityTest {
 
     @Test
     void testUpdateStrangerUserData() throws Exception {
-        var userId = userRepository.findAll().get(userSize / 2).getId();
+        var userId = userRepository.findAll().get(MIDDLE_OF_THE_LIST).getId();
         var userForUpdate = userRepository.findById(userId).orElseThrow();
 
         var newUserData = new UserUpdateDTO();
