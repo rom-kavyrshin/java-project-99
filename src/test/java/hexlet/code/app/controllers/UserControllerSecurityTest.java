@@ -21,6 +21,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -118,4 +121,18 @@ public class UserControllerSecurityTest {
         assertNotEquals(newUserData.getEmail().get(), userForUpdate.getEmail());
     }
 
+    @Test
+    void testDeleteStrangerUserData() throws Exception {
+        var userId = userRepository.findAll().get(MIDDLE_OF_THE_LIST).getId();
+
+        assertTrue(userRepository.findById(userId).isPresent());
+
+        mockMvc.perform(get("/api/users/" + userId).header("Authorization", token))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(delete("/api/users/" + userId).header("Authorization", token))
+                .andExpect(status().isForbidden());
+
+        assertTrue(userRepository.findById(userId).isPresent());
+    }
 }
