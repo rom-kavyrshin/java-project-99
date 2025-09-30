@@ -8,6 +8,7 @@ import hexlet.code.app.repositories.UserRepository;
 import hexlet.code.app.service.UserService;
 import net.datafaker.Faker;
 import org.instancio.Instancio;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openapitools.jackson.nullable.JsonNullable;
@@ -64,6 +65,11 @@ public class UserControllerSecurityTest {
     void setupTest() throws Exception {
         setupMocks();
         setupToken();
+    }
+
+    @AfterEach
+    void clear() {
+        userRepository.deleteAll();
     }
 
     void setupMocks() {

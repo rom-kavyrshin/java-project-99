@@ -3,10 +3,11 @@ package hexlet.code.app.controllers;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hexlet.code.app.ModelGenerator;
+import hexlet.code.app.dto.UserCreateDTO;
 import hexlet.code.app.dto.UserDTO;
 import hexlet.code.app.dto.UserUpdateDTO;
-import hexlet.code.app.model.User;
 import hexlet.code.app.repositories.UserRepository;
+import hexlet.code.app.service.UserService;
 import net.datafaker.Faker;
 import org.instancio.Instancio;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,7 +20,6 @@ import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -47,6 +47,9 @@ public class UserControllerTest {
     private UserRepository userRepository;
 
     @Autowired
+    private UserService userService;
+
+    @Autowired
     private Faker faker;
 
     @Autowired
@@ -60,14 +63,35 @@ public class UserControllerTest {
 
     private static String token;
 
+    private static final int USER_LIST_SIZE = 10;
+
+    private UserCreateDTO testUser;
+    private String testUserPassword;
+
     @BeforeEach
+    void setupTest() throws Exception {
+        setupMocks();
+        setupToken();
+    }
+
+    void setupMocks() {
+        userRepository.deleteAll();
+
+        for (int i = 0; i < USER_LIST_SIZE; i++) {
+            userService.create(Instancio.of(modelGenerator.getUserCreateDTOModel()).create());
+        }
+
+        testUser = Instancio.of(modelGenerator.getUserCreateDTOModel()).create();
+        testUserPassword = testUser.getPassword();
+        userService.create(testUser);
+    }
+
     void setupToken() throws Exception {
-        String loginJson = """
-                {
-                "username": "hexlet@example.com",
-                "password": "a123"
-                }
-                """;
+        HashMap<String, String> loginData = new HashMap<>();
+        loginData.put("username", testUser.getEmail());
+        loginData.put("password", testUserPassword);
+
+        var loginJson = objectMapper.writeValueAsString(loginData);
 
         var request = post("/api/login").contentType(MediaType.APPLICATION_JSON).content(loginJson);
 
@@ -76,19 +100,6 @@ public class UserControllerTest {
                 .andReturn().getResponse().getContentAsString();
 
         token = "Bearer " + result;
-    }
-
-    @BeforeEach
-    void setupMocks() {
-        ArrayList<User> users = new ArrayList<>();
-
-        for (int i = 0; i < 10; i++) {
-            users.add(Instancio.of(modelGenerator.getUserModel()).create());
-        }
-
-        System.out.println(users);
-
-        userRepository.saveAll(users);
     }
 
     @Test
