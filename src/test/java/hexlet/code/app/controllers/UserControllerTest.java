@@ -196,8 +196,8 @@ public class UserControllerTest {
 
     @Test
     void testUpdate() throws Exception {
-        var userId = userRepository.findAll().getFirst().getId();
-        var userForUpdate = userRepository.findById(userId).orElseThrow();
+        var userForUpdate = userRepository.findByEmail(testUser.getEmail()).orElseThrow();
+        var userId = userForUpdate.getId();
 
         var newUserData = Instancio.of(modelGenerator.getUserUpdateDTOModel()).create();
 
@@ -225,8 +225,8 @@ public class UserControllerTest {
 
     @Test
     void testPartlyUpdate() throws Exception {
-        var userId = userRepository.findAll().getLast().getId();
-        var userForUpdate = userRepository.findById(userId).orElseThrow();
+        var userForUpdate = userRepository.findByEmail(testUser.getEmail()).orElseThrow();
+        var userId = userForUpdate.getId();
 
         var newUserData = Instancio.of(modelGenerator.getUserUpdateDTOModel()).create();
         Map<String, Object> checkMap
@@ -328,8 +328,8 @@ public class UserControllerTest {
 
     @Test
     void testUpdatePassword() throws Exception {
-        var userId = userRepository.findAll().getLast().getId();
-        var userForUpdate = userRepository.findById(userId).orElseThrow();
+        var userForUpdate = userRepository.findByEmail(testUser.getEmail()).orElseThrow();
+        var userId = userForUpdate.getId();
 
         var newPassword = faker.internet().password();
 
@@ -353,8 +353,8 @@ public class UserControllerTest {
 
     @Test
     void testUpdateToNullRequiredFields() throws Exception {
-        var userId = userRepository.findAll().getLast().getId();
-        var userForUpdate = userRepository.findById(userId).orElseThrow();
+        var userForUpdate = userRepository.findByEmail(testUser.getEmail()).orElseThrow();
+        var userId = userForUpdate.getId();
 
         String newEmail = null;
 
@@ -378,8 +378,8 @@ public class UserControllerTest {
 
     @Test
     void testUpdateToInvalidEmail() throws Exception {
-        var userId = userRepository.findAll().getLast().getId();
-        var userForUpdate = userRepository.findById(userId).orElseThrow();
+        var userForUpdate = userRepository.findByEmail(testUser.getEmail()).orElseThrow();
+        var userId = userForUpdate.getId();
 
         String newEmail = "rkexample.com";
 
@@ -403,7 +403,8 @@ public class UserControllerTest {
 
     @Test
     void testDelete() throws Exception {
-        var userId = userRepository.findAll().getLast().getId();
+        var userForDelete = userRepository.findByEmail(testUser.getEmail()).orElseThrow();
+        var userId = userForDelete.getId();
 
         assertTrue(userRepository.findById(userId).isPresent());
 
