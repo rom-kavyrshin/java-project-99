@@ -7,6 +7,7 @@ import hexlet.code.app.dto.UserUpdateDTO;
 import hexlet.code.app.exception.ResourceNotFoundException;
 import hexlet.code.app.mapper.UserMapper;
 import hexlet.code.app.repositories.UserRepository;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.provisioning.UserDetailsManager;
@@ -48,6 +49,7 @@ public class UserService implements UserDetailsManager {
         return userMapper.map(user);
     }
 
+    @PreAuthorize("@userUtils.isOwner(#id)")
     public UserDTO update(long id, UserUpdateDTO userUpdateDTO) {
         validator.validate(userUpdateDTO);
 
@@ -59,6 +61,7 @@ public class UserService implements UserDetailsManager {
         return userMapper.map(user);
     }
 
+    @PreAuthorize("@userUtils.isOwner(#id)")
     public void delete(long id) {
         userRepository.deleteById(id);
     }
