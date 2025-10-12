@@ -7,6 +7,8 @@ import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 import hexlet.code.app.component.RsaKeyProperties;
+import hexlet.code.app.util.ResourceUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,11 +20,8 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
-import org.springframework.util.ResourceUtils;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.RSAPrivateKey;
@@ -46,6 +45,9 @@ public class EncodersConfig {
     @Value("${rsa.private-key-path}")
     private String privateKeyPath;
 
+    @Autowired
+    private ResourceUtil resourceUtil;
+
     @Bean
     public PasswordEncoder getPasswordEncoder() {
         return new BCryptPasswordEncoder();
@@ -65,8 +67,7 @@ public class EncodersConfig {
 
     @Bean
     RsaKeyProperties rsaKeyProperties() throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
-        var srcFile = ResourceUtils.getFile(privateKeyPath);
-        String encryptedPrivatePem = Files.readString(srcFile.toPath(), StandardCharsets.UTF_8);
+        String encryptedPrivatePem = resourceUtil.readResourceFileAsString(privateKeyPath);
 
         TextEncryptor decryptor = Encryptors.delux(privateKeyPassword, privateKeySalt);
         String decryptedPem = decryptor.decrypt(encryptedPrivatePem);
