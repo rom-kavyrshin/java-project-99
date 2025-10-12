@@ -303,11 +303,19 @@ public class UserControllerTest {
         checkMap.remove("email");
 
         /*--------------------------------*/
+        assertTrue(checkMap.isEmpty());
+    }
 
-        partNewUserData = new UserUpdateDTO();
+    @Test
+    void testUpdateToNull() throws Exception {
+        var userForUpdate = userRepository.findByEmail(testUser.getEmail()).orElseThrow();
+        var userId = userForUpdate.getId();
+        /*--------------------------------*/
+
+        var partNewUserData = new UserUpdateDTO();
         partNewUserData.setLastName(JsonNullable.of(null));
 
-        request = put("/api/users/" + userId)
+        var request = put("/api/users/" + userId)
                 .header("Authorization", token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(partNewUserData));
@@ -321,9 +329,7 @@ public class UserControllerTest {
         userForUpdate = userRepository.findById(userId).orElseThrow();
 
         assertThat(userForUpdate.getLastName(), equalTo(null));
-
         /*--------------------------------*/
-        assertTrue(checkMap.isEmpty());
     }
 
     @Test
