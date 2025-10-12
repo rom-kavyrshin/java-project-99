@@ -234,9 +234,9 @@ public class UserControllerTest {
 
         checkMap.remove("password");
 
-        assertThat(userForUpdate.getFirstName(), not(newUserData.getFirstName()));
-        assertThat(userForUpdate.getLastName(), not(newUserData.getLastName()));
-        assertThat(userForUpdate.getEmail(), not(newUserData.getEmail()));
+        assertThat(userForUpdate.getFirstName(), not(newUserData.getFirstName().get()));
+        assertThat(userForUpdate.getLastName(), not(newUserData.getLastName().get()));
+        assertThat(userForUpdate.getEmail(), not(newUserData.getEmail().get()));
 
         var partNewUserData = new UserUpdateDTO();
         partNewUserData.setFirstName(newUserData.getFirstName());
