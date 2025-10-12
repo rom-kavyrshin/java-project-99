@@ -1,3 +1,3 @@
 spring:
   datasource:
-    url: jdbc:postgresql://dpg-d2d16r8dl3ps738e9ibg-a:5432/${DATABASE_NAME}?password=${DATABASE_PASSWORD}&user=${DATABASE_USERNAME}
+    url: jdbc:postgresql://dpg-d3lqn9jipnbc73a8b150-a:5432/${DATABASE_NAME}?password=${DATABASE_PASSWORD}&user=${DATABASE_USERNAME}
