@@ -27,6 +27,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -114,14 +115,18 @@ public class UserControllerTest {
         var userId = userRepository.findAll().getLast().getId();
         var user = userRepository.findById(userId).orElseThrow();
 
-        mockMvc.perform(get("/api/users/" + userId).header("Authorization", token))
+        var result = mockMvc.perform(get("/api/users/" + userId).header("Authorization", token))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(equalTo(user.getId()), Long.class))
-                .andExpect(jsonPath("$.firstName").value(equalTo(user.getFirstName())))
-                .andExpect(jsonPath("$.lastName").value(equalTo(user.getLastName())))
-                .andExpect(jsonPath("$.email").value(equalTo(user.getEmail())))
-                .andExpect(jsonPath("$.createdAt").value(equalTo(user.getCreatedAt().toString())))
-                .andExpect(jsonPath("$.updatedAt").value(equalTo(user.getUpdatedAt().toString())));
+                .andReturn();
+
+        var resultUserDto = objectMapper.readValue(result.getResponse().getContentAsString(), UserDTO.class);
+
+        assertEquals(user.getId(), resultUserDto.getId());
+        assertEquals(user.getFirstName(), resultUserDto.getFirstName());
+        assertEquals(user.getLastName(), resultUserDto.getLastName());
+        assertEquals(user.getEmail(), resultUserDto.getEmail());
+        assertEquals(user.getCreatedAt(), resultUserDto.getCreatedAt());
+        assertEquals(user.getUpdatedAt(), resultUserDto.getUpdatedAt());
     }
 
     @Test
