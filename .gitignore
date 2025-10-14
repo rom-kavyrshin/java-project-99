@@ -1,6 +1,3 @@
-*.env
-!general.env
-
 .gradle
 build/
 !gradle/wrapper/gradle-wrapper.jar
@@ -44,3 +41,10 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+
+### Env ###
+*.env
+!general.env
+
+### Frontend ###
+/node_modules
