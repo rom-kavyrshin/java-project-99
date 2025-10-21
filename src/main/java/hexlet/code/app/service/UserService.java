@@ -7,6 +7,7 @@ import hexlet.code.app.dto.UserUpdateDTO;
 import hexlet.code.app.exception.ResourceNotFoundException;
 import hexlet.code.app.mapper.UserMapper;
 import hexlet.code.app.repositories.UserRepository;
+import hexlet.code.app.util.UserUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -21,12 +22,14 @@ public class UserService implements UserDetailsManager {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final CustomValidator validator;
+    private final UserUtils userUtils;
 
 
-    public UserService(UserRepository userRepository, UserMapper userMapper, CustomValidator validator) {
+    public UserService(UserRepository userRepository, UserMapper userMapper, CustomValidator validator, UserUtils userUtils) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
         this.validator = validator;
+        this.userUtils = userUtils;
     }
 
     public List<UserDTO> getAll() {
@@ -94,6 +97,6 @@ public class UserService implements UserDetailsManager {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User " + email + " not found"));
+                .orElseThrow(() -> userUtils.getUsernameNotFoundException(email));
     }
 }

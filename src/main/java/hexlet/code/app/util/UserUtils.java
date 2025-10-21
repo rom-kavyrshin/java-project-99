@@ -3,6 +3,7 @@ package hexlet.code.app.util;
 import hexlet.code.app.model.User;
 import hexlet.code.app.repositories.UserRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -20,7 +21,12 @@ public class UserUtils {
             return null;
         }
         var email = authentication.getName();
-        return userRepository.findByEmail(email).orElseThrow();
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> getUsernameNotFoundException(email));
+    }
+
+    public UsernameNotFoundException getUsernameNotFoundException(String email) {
+        return new UsernameNotFoundException("User " + email + " not found");
     }
 
     public boolean isOwner(long id) {
