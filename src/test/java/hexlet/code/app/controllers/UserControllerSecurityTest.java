@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import hexlet.code.app.ModelGenerator;
 import hexlet.code.app.dto.UserCreateDTO;
 import hexlet.code.app.dto.UserUpdateDTO;
+import hexlet.code.app.mapper.UserMapper;
 import hexlet.code.app.repositories.UserRepository;
-import hexlet.code.app.service.UserService;
 import net.datafaker.Faker;
 import org.instancio.Instancio;
 import org.junit.jupiter.api.AfterEach;
@@ -40,7 +40,7 @@ public class UserControllerSecurityTest {
     private UserRepository userRepository;
 
     @Autowired
-    private UserService userService;
+    private UserMapper userMapper;
 
     @Autowired
     private Faker faker;
@@ -74,12 +74,13 @@ public class UserControllerSecurityTest {
 
     void setupMocks() {
         for (int i = 0; i < USER_LIST_SIZE; i++) {
-            userService.create(Instancio.of(modelGenerator.getUserCreateDTOModel()).create());
+            var user = Instancio.of(modelGenerator.getUserCreateDTOModel()).create();
+            userRepository.save(userMapper.map(user));
         }
 
         testUser = Instancio.of(modelGenerator.getUserCreateDTOModel()).create();
         testUserPassword = testUser.getPassword();
-        userService.create(testUser);
+        userRepository.save(userMapper.map(testUser));
     }
 
     void setupToken() throws Exception {
