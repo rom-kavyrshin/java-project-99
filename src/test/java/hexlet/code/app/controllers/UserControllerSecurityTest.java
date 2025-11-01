@@ -169,15 +169,15 @@ public class UserControllerSecurityTest {
                 .content(userJson);
 
         mockMvc.perform(request)
-                .andExpect(status().isForbidden());
+                .andExpect(status().isUnauthorized());
 
         mockMvc.perform(get("/api/users").header("Authorization", token))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isUnauthorized());
 
         var showUserId = userRepository.findAll().getLast().getId();
 
         mockMvc.perform(get("/api/users/" + showUserId).header("Authorization", token))
-                .andExpect(status().isForbidden())
+                .andExpect(status().isUnauthorized())
                 .andReturn();
     }
 }
