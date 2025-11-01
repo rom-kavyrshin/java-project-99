@@ -1,8 +1,8 @@
 package hexlet.code.app.component;
 
 import hexlet.code.app.dto.UserCreateDTO;
+import hexlet.code.app.mapper.UserMapper;
 import hexlet.code.app.repositories.UserRepository;
-import hexlet.code.app.service.UserService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -13,15 +13,15 @@ public class DataInitializer implements ApplicationRunner {
 
     public static final String DEFAULT_USER_EMAIL = "hexlet@example.com";
 
-    private final UserService userService;
     private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
     @Value("${default-user.password}")
     private String defaultUserPassword;
 
-    public DataInitializer(UserService userService, UserRepository userRepository) {
-        this.userService = userService;
+    public DataInitializer(UserRepository userRepository, UserMapper userMapper) {
         this.userRepository = userRepository;
+        this.userMapper = userMapper;
     }
 
     @Override
@@ -30,7 +30,7 @@ public class DataInitializer implements ApplicationRunner {
             var user = new UserCreateDTO();
             user.setEmail(DEFAULT_USER_EMAIL);
             user.setPassword(defaultUserPassword);
-            userService.create(user);
+            userRepository.save(userMapper.map(user));
         }
     }
 }
