@@ -135,7 +135,9 @@ public class UserControllerTest {
 
     @Test
     void testShowWithNonExistId() throws Exception {
-        var userId = userRepository.findAll().getLast().getId();
+        var list = userRepository.findAll();
+        var userId = list.get(list.size() / 2).getId();
+
         userRepository.deleteById(userId);
 
         mockMvc.perform(get("/api/users/" + userId).header("Authorization", token))
