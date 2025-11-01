@@ -23,6 +23,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.HashMap;
 import java.util.Map;
 
+import static hexlet.code.app.util.HeaderUtils.X_TOTAL_COUNT_HEADER_NAME;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
@@ -34,6 +35,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -108,6 +110,7 @@ public class UserControllerTest {
     void testIndex() throws Exception {
         mockMvc.perform(get("/api/users").header("Authorization", token))
                 .andExpect(status().isOk())
+                .andExpect(header().string(X_TOTAL_COUNT_HEADER_NAME, "11"))
                 .andExpect(jsonPath("$").value(hasSize(11)));
     }
 
