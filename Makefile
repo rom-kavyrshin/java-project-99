@@ -39,4 +39,10 @@ image-run:
 image-run-it:
 	docker run -it -p 7070:7070 --env-file local.env rom-kavyrshin/java-project-99 bash
 
+frontend-install:
+	npm i @hexlet/java-task-manager-frontend
+
+frontend-build:
+	npx build-frontend
+
 .PHONY: build
