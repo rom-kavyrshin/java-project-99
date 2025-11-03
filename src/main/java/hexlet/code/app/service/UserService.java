@@ -25,7 +25,12 @@ public class UserService implements UserDetailsManager {
     private final UserUtils userUtils;
 
 
-    public UserService(UserRepository userRepository, UserMapper userMapper, CustomValidator validator, UserUtils userUtils) {
+    public UserService(
+            UserRepository userRepository,
+            UserMapper userMapper,
+            CustomValidator validator,
+            UserUtils userUtils
+    ) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
         this.validator = validator;
