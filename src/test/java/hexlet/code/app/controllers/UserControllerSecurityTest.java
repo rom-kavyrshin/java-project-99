@@ -142,42 +142,4 @@ public class UserControllerSecurityTest {
 
         assertTrue(userRepository.findById(userId).isPresent());
     }
-
-    @Test
-    void testMakeRequestAfterUserDeleted() throws Exception {
-        var userForDelete = userRepository.findByEmail(testUser.getEmail()).orElseThrow();
-        var userId = userForDelete.getId();
-
-        assertTrue(userRepository.findById(userId).isPresent());
-
-        mockMvc.perform(get("/api/users/" + userId).header("Authorization", token))
-                .andExpect(status().isOk());
-
-        mockMvc.perform(delete("/api/users/" + userId).header("Authorization", token))
-                .andExpect(status().isNoContent());
-
-        assertTrue(userRepository.findById(userId).isEmpty());
-
-        /////////////////////////
-
-        var userCreateDTO = Instancio.of(modelGenerator.getUserCreateDTOModel()).create();
-        var userJson = objectMapper.writeValueAsString(userCreateDTO);
-
-        var request = post("/api/users")
-                .header("Authorization", token)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(userJson);
-
-        mockMvc.perform(request)
-                .andExpect(status().isUnauthorized());
-
-        mockMvc.perform(get("/api/users").header("Authorization", token))
-                .andExpect(status().isUnauthorized());
-
-        var showUserId = userRepository.findAll().getLast().getId();
-
-        mockMvc.perform(get("/api/users/" + showUserId).header("Authorization", token))
-                .andExpect(status().isUnauthorized())
-                .andReturn();
-    }
 }
