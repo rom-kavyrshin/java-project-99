@@ -1,6 +1,6 @@
 package hexlet.code.app.component;
 
-import hexlet.code.app.dto.UserCreateDTO;
+import hexlet.code.app.dto.user.UserCreateDTO;
 import hexlet.code.app.mapper.UserMapper;
 import hexlet.code.app.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Value;

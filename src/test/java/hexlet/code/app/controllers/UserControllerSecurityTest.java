@@ -2,8 +2,8 @@ package hexlet.code.app.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hexlet.code.app.ModelGenerator;
-import hexlet.code.app.dto.UserCreateDTO;
-import hexlet.code.app.dto.UserUpdateDTO;
+import hexlet.code.app.dto.user.UserCreateDTO;
+import hexlet.code.app.dto.user.UserUpdateDTO;
 import hexlet.code.app.mapper.UserMapper;
 import hexlet.code.app.repositories.UserRepository;
 import net.datafaker.Faker;
