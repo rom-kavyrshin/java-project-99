@@ -1,7 +1,10 @@
 package hexlet.code.app.component;
 
+import hexlet.code.app.dto.task_status.TaskStatusCreateDTO;
 import hexlet.code.app.dto.user.UserCreateDTO;
+import hexlet.code.app.mapper.TaskStatusMapper;
 import hexlet.code.app.mapper.UserMapper;
+import hexlet.code.app.repositories.TaskStatusRepository;
 import hexlet.code.app.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
@@ -16,21 +19,52 @@ public class DataInitializer implements ApplicationRunner {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
+    private final TaskStatusRepository taskStatusRepository;
+    private final TaskStatusMapper taskStatusMapper;
+
     @Value("${default-user.password}")
     private String defaultUserPassword;
 
-    public DataInitializer(UserRepository userRepository, UserMapper userMapper) {
+    public DataInitializer(
+            UserRepository userRepository,
+            UserMapper userMapper,
+            TaskStatusRepository taskStatusRepository,
+            TaskStatusMapper taskStatusMapper
+    ) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
+        this.taskStatusRepository = taskStatusRepository;
+        this.taskStatusMapper = taskStatusMapper;
     }
 
     @Override
     public void run(ApplicationArguments args) {
+        createDefaultUser(args);
+        createDefaultTaskStatuses(args);
+    }
+
+    public void createDefaultUser(ApplicationArguments args) {
         if (!userRepository.existsByEmail(DEFAULT_USER_EMAIL)) {
             var user = new UserCreateDTO();
             user.setEmail(DEFAULT_USER_EMAIL);
             user.setPassword(defaultUserPassword);
             userRepository.save(userMapper.map(user));
+        }
+    }
+
+    public void createDefaultTaskStatuses(ApplicationArguments args) {
+        if (taskStatusRepository.count() == 0) {
+            var draft = new TaskStatusCreateDTO("Draft", "draft");
+            var toReview = new TaskStatusCreateDTO("To Review", "to_review");
+            var toBeFixed = new TaskStatusCreateDTO("To Be Fixed", "to_be_fixed");
+            var toPublish = new TaskStatusCreateDTO("To Publish", "to_publish");
+            var published = new TaskStatusCreateDTO("Published", "published");
+
+            taskStatusRepository.save(taskStatusMapper.map(draft));
+            taskStatusRepository.save(taskStatusMapper.map(toReview));
+            taskStatusRepository.save(taskStatusMapper.map(toBeFixed));
+            taskStatusRepository.save(taskStatusMapper.map(toPublish));
+            taskStatusRepository.save(taskStatusMapper.map(published));
         }
     }
 }
