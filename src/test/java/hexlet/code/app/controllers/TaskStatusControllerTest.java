@@ -122,7 +122,8 @@ public class TaskStatusControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        var resultTaskStatusDto = objectMapper.readValue(result.getResponse().getContentAsString(), TaskStatusDTO.class);
+        var resultTaskStatusDto
+                = objectMapper.readValue(result.getResponse().getContentAsString(), TaskStatusDTO.class);
 
         assertEquals(taskStatus.getId(), resultTaskStatusDto.getId());
         assertEquals(taskStatus.getName(), resultTaskStatusDto.getName());
@@ -155,7 +156,8 @@ public class TaskStatusControllerTest {
                 .andExpect(status().isCreated())
                 .andReturn();
 
-        var resultTaskStatusDto = objectMapper.readValue(result.getResponse().getContentAsString(), TaskStatusDTO.class);
+        var resultTaskStatusDto
+                = objectMapper.readValue(result.getResponse().getContentAsString(), TaskStatusDTO.class);
 
         assertThat(taskStatusCreateDTO.getName(), equalTo(resultTaskStatusDto.getName()));
         assertThat(taskStatusCreateDTO.getSlug(), equalTo(resultTaskStatusDto.getSlug()));
@@ -221,7 +223,8 @@ public class TaskStatusControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        var resultTaskStatusDto = objectMapper.readValue(result.getResponse().getContentAsString(), TaskStatusDTO.class);
+        var resultTaskStatusDto
+                = objectMapper.readValue(result.getResponse().getContentAsString(), TaskStatusDTO.class);
 
         assertEquals(newTaskStatusData.getName().get(), resultTaskStatusDto.getName());
         assertEquals(newTaskStatusData.getSlug().get(), resultTaskStatusDto.getSlug());
