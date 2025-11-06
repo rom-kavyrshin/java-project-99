@@ -1,7 +1,10 @@
 package hexlet.code.app;
 
+import hexlet.code.app.dto.task_status.TaskStatusCreateDTO;
+import hexlet.code.app.dto.task_status.TaskStatusUpdateDTO;
 import hexlet.code.app.dto.user.UserCreateDTO;
 import hexlet.code.app.dto.user.UserUpdateDTO;
+import hexlet.code.app.model.TaskStatus;
 import hexlet.code.app.model.User;
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
@@ -21,11 +24,20 @@ public class ModelGenerator {
     private Model<UserUpdateDTO> userUpdateDTOModel;
     private Model<User> userModel;
 
+    private Model<TaskStatusCreateDTO> taskStatusCreateDTOModel;
+    private Model<TaskStatusUpdateDTO> taskStatusUpdateDTOModel;
+    private Model<TaskStatus> taskStatusModel;
+
     @Autowired
     private Faker faker;
 
     @PostConstruct
     private void init() {
+        initUserModels();
+        initTaskStatusModels();
+    }
+
+    private void initUserModels() {
         userCreateDTOModel = Instancio.of(UserCreateDTO.class)
                 .supply(Select.field(UserCreateDTO::getFirstName), () -> faker.name().firstName())
                 .supply(Select.field(UserCreateDTO::getLastName), () -> faker.name().lastName())
@@ -48,6 +60,25 @@ public class ModelGenerator {
                 .supply(Select.field(User::getLastName), () -> faker.name().lastName())
                 .supply(Select.field(User::getEmail), () -> faker.internet().emailAddress())
                 .supply(Select.field(User::getPasswordDigest), () -> faker.internet().password())
+                .toModel();
+    }
+
+    private void initTaskStatusModels() {
+        taskStatusCreateDTOModel = Instancio.of(TaskStatusCreateDTO.class)
+                .supply(Select.field(TaskStatusCreateDTO::getName), () -> faker.internet().slug())
+                .supply(Select.field(TaskStatusCreateDTO::getSlug), () -> faker.internet().slug())
+                .toModel();
+
+        taskStatusUpdateDTOModel = Instancio.of(TaskStatusUpdateDTO.class)
+                .supply(Select.field(TaskStatusUpdateDTO::getName), () -> JsonNullable.of(faker.internet().slug()))
+                .supply(Select.field(TaskStatusUpdateDTO::getSlug), () -> JsonNullable.of(faker.internet().slug()))
+                .toModel();
+
+        taskStatusModel = Instancio.of(TaskStatus.class)
+                .ignore(Select.field(TaskStatus::getId))
+                .ignore(Select.field(TaskStatus::getCreatedAt))
+                .supply(Select.field(TaskStatus::getName), () -> faker.internet().slug())
+                .supply(Select.field(TaskStatus::getSlug), () -> faker.internet().slug())
                 .toModel();
     }
 }
