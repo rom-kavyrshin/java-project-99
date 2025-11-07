@@ -18,9 +18,9 @@ import org.mapstruct.ReportingPolicy;
 )
 public abstract class TaskStatusMapper {
 
-    public abstract TaskStatus map(TaskStatusCreateDTO userDTO);
+    public abstract TaskStatus map(TaskStatusCreateDTO taskStatusCreateDTO);
 
-    public abstract TaskStatusDTO map(TaskStatus user);
+    public abstract TaskStatusDTO map(TaskStatus taskStatus);
 
-    public abstract void update(TaskStatusUpdateDTO dto, @MappingTarget TaskStatus model);
+    public abstract void update(TaskStatusUpdateDTO updateDTO, @MappingTarget TaskStatus model);
 }
