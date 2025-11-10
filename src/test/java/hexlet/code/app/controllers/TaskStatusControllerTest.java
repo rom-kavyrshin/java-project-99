@@ -187,7 +187,7 @@ public class TaskStatusControllerTest {
     }
 
     @Test
-    void testCreateWithInvalidPassword() throws Exception {
+    void testCreateWithInvalidSlug() throws Exception {
         var name = "s";
         var slug = "";
 
