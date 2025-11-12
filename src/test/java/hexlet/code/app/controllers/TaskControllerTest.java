@@ -6,8 +6,11 @@ import hexlet.code.app.ModelGenerator;
 import hexlet.code.app.dto.task.TaskDTO;
 import hexlet.code.app.dto.task.TaskUpdateDTO;
 import hexlet.code.app.mapper.TaskMapper;
+import hexlet.code.app.mapper.UserMapper;
 import hexlet.code.app.model.Task;
+import hexlet.code.app.model.User;
 import hexlet.code.app.repositories.TaskRepository;
+import hexlet.code.app.repositories.UserRepository;
 import net.datafaker.Faker;
 import org.instancio.Instancio;
 import org.junit.jupiter.api.AfterEach;
@@ -22,6 +25,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -53,7 +57,13 @@ public class TaskControllerTest {
     private TaskRepository taskRepository;
 
     @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
     private TaskMapper taskMapper;
+
+    @Autowired
+    private UserMapper userMapper;
 
     @Autowired
     private Faker faker;
@@ -69,9 +79,11 @@ public class TaskControllerTest {
 
     private static String token;
 
+    private static final int USER_LIST_SIZE = 4;
     private static final int TASK_LIST_SIZE = 20;
 
     private Task testTask;
+    private final ArrayList<User> usersList = new ArrayList<>();
 
     @BeforeEach
     void setupTest() throws Exception {
@@ -82,9 +94,17 @@ public class TaskControllerTest {
     @AfterEach
     void cleanup() {
         taskRepository.deleteAll();
+        userRepository.deleteAll(usersList);
     }
 
     void setupMocks() {
+        for (int i = 0; i < USER_LIST_SIZE; i++) {
+            var user = Instancio.of(modelGenerator.getUserCreateDTOModel()).create();
+            usersList.add(userMapper.map(user));
+        }
+
+        userRepository.saveAll(usersList);
+
         for (int i = 0; i < TASK_LIST_SIZE; i++) {
             var task = Instancio.of(modelGenerator.getTaskCreateDTOModel()).create();
             taskRepository.save(taskMapper.map(task));
