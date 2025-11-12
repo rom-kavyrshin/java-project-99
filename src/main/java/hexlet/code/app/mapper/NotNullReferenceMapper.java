@@ -15,18 +15,22 @@ public abstract class NotNullReferenceMapper {
     @Autowired
     private EntityManager entityManager;
 
-    public <T extends BaseEntity> T toEntity(Long id, @TargetType Class<T> entityClass) throws DependentResourceNotFoundException {
+    public <T extends BaseEntity> T toEntity(
+            Long id,
+            @TargetType Class<T> entityClass
+    ) throws DependentResourceNotFoundException {
         if (id != null) {
             var entity = entityManager.find(entityClass, id);
 
             if (entity == null) {
-                throw new DependentResourceNotFoundException(entityClass.getSimpleName() + " with id " + id + " not found");
+                throw new DependentResourceNotFoundException(
+                        entityClass.getSimpleName() + " with id " + id + " not found"
+                );
             }
 
             return entity;
         } else {
             return null;
-//            throw new DependentResourceNotFoundException(entityClass.getSimpleName() + " with id " + id + " not found");
         }
     }
 }

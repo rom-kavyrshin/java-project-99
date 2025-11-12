@@ -109,11 +109,26 @@ public class ModelGenerator {
                 .toModel();
 
         taskUpdateDTOModel = Instancio.of(TaskUpdateDTO.class)
-                .supply(Select.field(TaskCreateDTO::getIndex), () -> JsonNullable.of(faker.number().numberBetween(1000, 9999)))
-                .supply(Select.field(TaskCreateDTO::getTitle), () -> JsonNullable.of(faker.departed().character()))
-                .supply(Select.field(TaskCreateDTO::getContent), () -> JsonNullable.of(faker.departed().quote()))
-                .supply(Select.field(TaskCreateDTO::getStatus), () -> JsonNullable.of(getStatusSlugFromRepository()))
-                .supply(Select.field(TaskCreateDTO::getAssigneeId), () -> JsonNullable.of(getUserIdFromRepositoryOrNull()))
+                .supply(
+                        Select.field(TaskCreateDTO::getIndex),
+                        () -> JsonNullable.of(faker.number().numberBetween(1000, 9999))
+                )
+                .supply(
+                        Select.field(TaskCreateDTO::getTitle),
+                        () -> JsonNullable.of(faker.departed().character())
+                )
+                .supply(
+                        Select.field(TaskCreateDTO::getContent),
+                        () -> JsonNullable.of(faker.departed().quote())
+                )
+                .supply(
+                        Select.field(TaskCreateDTO::getStatus),
+                        () -> JsonNullable.of(getStatusSlugFromRepository())
+                )
+                .supply(
+                        Select.field(TaskCreateDTO::getAssigneeId),
+                        () -> JsonNullable.of(getUserIdFromRepositoryOrNull())
+                )
                 .toModel();
     }
 
