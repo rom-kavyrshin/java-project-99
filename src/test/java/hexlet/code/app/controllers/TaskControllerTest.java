@@ -10,6 +10,7 @@ import hexlet.code.app.model.Task;
 import hexlet.code.app.repositories.TaskRepository;
 import net.datafaker.Faker;
 import org.instancio.Instancio;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openapitools.jackson.nullable.JsonNullable;
@@ -78,9 +79,12 @@ public class TaskControllerTest {
         setupToken();
     }
 
-    void setupMocks() {
+    @AfterEach
+    void cleanup() {
         taskRepository.deleteAll();
+    }
 
+    void setupMocks() {
         for (int i = 0; i < TASK_LIST_SIZE; i++) {
             var task = Instancio.of(modelGenerator.getTaskCreateDTOModel()).create();
             taskRepository.save(taskMapper.map(task));
