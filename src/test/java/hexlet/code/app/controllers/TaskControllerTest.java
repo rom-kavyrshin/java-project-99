@@ -246,7 +246,7 @@ public class TaskControllerTest {
         map.put("title", title);
         map.put("content", content);
         map.put("status", status);
-        map.put("assigneeId", assigneeId);
+        map.put("assignee_id", assigneeId);
 
         var request = post("/api/tasks")
                 .header("Authorization", token)
@@ -362,7 +362,7 @@ public class TaskControllerTest {
         checkMap.remove("status");
 
         assertEquals(JsonNullable.class, taskUpdateDTO.getAssigneeId().getClass());
-        checkMap.remove("assigneeId");
+        checkMap.remove("assignee_id");
 
         assertTrue(checkMap.isEmpty());
     }
