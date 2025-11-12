@@ -1,11 +1,16 @@
 package hexlet.code.app;
 
+import hexlet.code.app.dto.task.TaskCreateDTO;
+import hexlet.code.app.dto.task.TaskDTO;
+import hexlet.code.app.dto.task.TaskUpdateDTO;
 import hexlet.code.app.dto.task_status.TaskStatusCreateDTO;
 import hexlet.code.app.dto.task_status.TaskStatusUpdateDTO;
 import hexlet.code.app.dto.user.UserCreateDTO;
 import hexlet.code.app.dto.user.UserUpdateDTO;
 import hexlet.code.app.model.TaskStatus;
 import hexlet.code.app.model.User;
+import hexlet.code.app.repositories.TaskStatusRepository;
+import hexlet.code.app.repositories.UserRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import net.datafaker.Faker;
@@ -15,6 +20,8 @@ import org.instancio.Select;
 import org.openapitools.jackson.nullable.JsonNullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.security.SecureRandom;
 
 @Getter
 @Component
@@ -28,13 +35,23 @@ public class ModelGenerator {
     private Model<TaskStatusUpdateDTO> taskStatusUpdateDTOModel;
     private Model<TaskStatus> taskStatusModel;
 
+    private Model<TaskCreateDTO> taskCreateDTOModel;
+    private Model<TaskUpdateDTO> taskUpdateDTOModel;
+
     @Autowired
     private Faker faker;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private TaskStatusRepository taskStatusRepository;
 
     @PostConstruct
     private void init() {
         initUserModels();
         initTaskStatusModels();
+        initTaskModels();
     }
 
     private void initUserModels() {
@@ -80,5 +97,60 @@ public class ModelGenerator {
                 .supply(Select.field(TaskStatus::getName), () -> faker.internet().slug())
                 .supply(Select.field(TaskStatus::getSlug), () -> faker.internet().slug())
                 .toModel();
+    }
+
+    private void initTaskModels() {
+        taskCreateDTOModel = Instancio.of(TaskCreateDTO.class)
+                .supply(Select.field(TaskCreateDTO::getIndex), () -> (long) faker.number().numberBetween(1000, 9999))
+                .supply(Select.field(TaskCreateDTO::getTitle), () -> faker.departed().character())
+                .supply(Select.field(TaskCreateDTO::getContent), () -> faker.departed().quote())
+                .supply(Select.field(TaskCreateDTO::getStatus), () -> getStatusSlugFromRepository())
+                .supply(Select.field(TaskCreateDTO::getAssigneeId), () -> getUserIdFromRepositoryOrNull())
+                .toModel();
+
+        taskUpdateDTOModel = Instancio.of(TaskUpdateDTO.class)
+                .supply(Select.field(TaskCreateDTO::getIndex), () -> JsonNullable.of(faker.number().numberBetween(1000, 9999)))
+                .supply(Select.field(TaskCreateDTO::getTitle), () -> JsonNullable.of(faker.departed().character()))
+                .supply(Select.field(TaskCreateDTO::getContent), () -> JsonNullable.of(faker.departed().quote()))
+                .supply(Select.field(TaskCreateDTO::getStatus), () -> JsonNullable.of(getStatusSlugFromRepository()))
+                .supply(Select.field(TaskCreateDTO::getAssigneeId), () -> JsonNullable.of(getUserIdFromRepositoryOrNull()))
+                .toModel();
+    }
+
+    public TaskUpdateDTO getFullyDifferentTask(TaskDTO original) {
+        var result = new TaskUpdateDTO();
+        result.setIndex(JsonNullable.of(original.getIndex() + 11));
+        result.setTitle(JsonNullable.of(original.getTitle() + " updated"));
+        result.setContent(JsonNullable.of(original.getContent() + " updated"));
+        result.setStatus(JsonNullable.of(getStatusSlugFromRepository(original.getStatus())));
+        result.setAssigneeId(JsonNullable.of(getUserIdFromRepositoryOrNull(original.getAssigneeId())));
+
+        return result;
+    }
+
+    private Long getUserIdFromRepositoryOrNull() {
+        return getUserIdFromRepositoryOrNull(null);
+    }
+
+    private Long getUserIdFromRepositoryOrNull(Long filter) {
+        var random = new SecureRandom();
+
+        if (random.nextBoolean()) {
+            var users = userRepository.findAll().stream().filter(it -> !it.getId().equals(filter)).toList();
+            return users.get(random.nextInt(users.size())).getId();
+        }
+
+        return null;
+    }
+
+    private String getStatusSlugFromRepository() {
+        return getStatusSlugFromRepository(null);
+    }
+
+    private String getStatusSlugFromRepository(String filter) {
+        var random = new SecureRandom();
+
+        var taskStatuses = taskStatusRepository.findAll().stream().filter(it -> !it.getSlug().equals(filter)).toList();
+        return taskStatuses.get(random.nextInt(taskStatuses.size())).getSlug();
     }
 }
