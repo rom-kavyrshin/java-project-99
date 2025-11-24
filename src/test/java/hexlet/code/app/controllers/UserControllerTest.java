@@ -3,11 +3,13 @@ package hexlet.code.app.controllers;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hexlet.code.app.ModelGenerator;
+import hexlet.code.app.dto.task.TaskCreateDTO;
 import hexlet.code.app.dto.user.UserCreateDTO;
 import hexlet.code.app.dto.user.UserDTO;
 import hexlet.code.app.dto.user.UserUpdateDTO;
 import hexlet.code.app.mapper.UserMapper;
 import hexlet.code.app.repositories.UserRepository;
+import hexlet.code.app.service.TaskService;
 import net.datafaker.Faker;
 import org.instancio.Instancio;
 import org.junit.jupiter.api.BeforeEach;
@@ -51,6 +53,9 @@ public class UserControllerTest {
 
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private TaskService taskService;
 
     @Autowired
     private Faker faker;
@@ -432,5 +437,25 @@ public class UserControllerTest {
                 .andExpect(status().isNoContent());
 
         assertTrue(userRepository.findById(userId).isEmpty());
+    }
+
+    @Test
+    void testDeleteUserWithTask() throws Exception {
+        var userForDelete = userRepository.findByEmail(testUser.getEmail()).orElseThrow();
+        var userId = userForDelete.getId();
+
+        var taskDto = taskService.create(new TaskCreateDTO(123L, "Test task", "Test task 42", "draft", userForDelete.getId()));
+
+        assertTrue(userRepository.findById(userId).isPresent());
+
+        mockMvc.perform(get("/api/users/" + userId).header("Authorization", token))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(delete("/api/users/" + userId).header("Authorization", token))
+                .andExpect(status().isBadRequest());
+
+        assertTrue(userRepository.findById(userId).isPresent());
+
+        taskService.delete(taskDto.getId());
     }
 }
