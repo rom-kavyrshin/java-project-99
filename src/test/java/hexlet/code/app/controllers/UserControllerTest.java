@@ -444,7 +444,9 @@ public class UserControllerTest {
         var userForDelete = userRepository.findByEmail(testUser.getEmail()).orElseThrow();
         var userId = userForDelete.getId();
 
-        var taskDto = taskService.create(new TaskCreateDTO(123L, "Test task", "Test task 42", "draft", userForDelete.getId()));
+        var taskDto = taskService.create(
+                new TaskCreateDTO(123L, "Test task", "Test task 42", "draft", userForDelete.getId())
+        );
 
         assertTrue(userRepository.findById(userId).isPresent());
 
