@@ -7,9 +7,11 @@ import hexlet.code.app.dto.task_status.TaskStatusCreateDTO;
 import hexlet.code.app.dto.task_status.TaskStatusDTO;
 import hexlet.code.app.dto.task_status.TaskStatusUpdateDTO;
 import hexlet.code.app.mapper.TaskStatusMapper;
+import hexlet.code.app.model.TaskStatus;
 import hexlet.code.app.repositories.TaskStatusRepository;
 import net.datafaker.Faker;
 import org.instancio.Instancio;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openapitools.jackson.nullable.JsonNullable;
@@ -20,6 +22,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -71,6 +74,7 @@ public class TaskStatusControllerTest {
     private static final int TASK_STATUS_LIST_SIZE = 5;
 
     private TaskStatusCreateDTO testTaskStatus;
+    private final ArrayList<TaskStatus> taskStatusList = new ArrayList<>();
 
     @BeforeEach
     void setupTest() throws Exception {
@@ -78,16 +82,21 @@ public class TaskStatusControllerTest {
         setupToken();
     }
 
-    void setupMocks() {
-        taskStatusRepository.deleteAll();
+    @AfterEach
+    void cleanup() {
+        taskStatusRepository.deleteAll(taskStatusList);
+    }
 
+    void setupMocks() {
         for (int i = 0; i < TASK_STATUS_LIST_SIZE; i++) {
             var taskStatus = Instancio.of(modelGenerator.getTaskStatusCreateDTOModel()).create();
-            taskStatusRepository.save(taskStatusMapper.map(taskStatus));
+            taskStatusList.add(taskStatusMapper.map(taskStatus));
         }
 
         testTaskStatus = Instancio.of(modelGenerator.getTaskStatusCreateDTOModel()).create();
-        taskStatusRepository.save(taskStatusMapper.map(testTaskStatus));
+        taskStatusList.add(taskStatusMapper.map(testTaskStatus));
+
+        taskStatusRepository.saveAll(taskStatusList);
     }
 
     void setupToken() throws Exception {
@@ -110,8 +119,8 @@ public class TaskStatusControllerTest {
     void testIndex() throws Exception {
         mockMvc.perform(get("/api/task_statuses").header("Authorization", token))
                 .andExpect(status().isOk())
-                .andExpect(header().string(X_TOTAL_COUNT_HEADER_NAME, "6"))
-                .andExpect(jsonPath("$").value(hasSize(6)));
+                .andExpect(header().string(X_TOTAL_COUNT_HEADER_NAME, "11"))
+                .andExpect(jsonPath("$").value(hasSize(11)));
     }
 
     @Test
