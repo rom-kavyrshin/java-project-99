@@ -1,5 +1,6 @@
 package hexlet.code.app.handler;
 
+import hexlet.code.app.exception.CantDeleteUserException;
 import hexlet.code.app.exception.DependentResourceNotFoundException;
 import hexlet.code.app.exception.ResourceNotFoundException;
 import jakarta.validation.ConstraintViolationException;
@@ -24,6 +25,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(DependentResourceNotFoundException.class)
     public ResponseEntity<String> handleDependentResourceNotFoundException(DependentResourceNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(CantDeleteUserException.class)
+    public ResponseEntity<String> handleCantDeleteUserException(CantDeleteUserException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 }
