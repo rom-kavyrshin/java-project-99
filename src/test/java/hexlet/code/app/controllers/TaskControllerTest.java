@@ -35,6 +35,7 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -279,6 +280,44 @@ public class TaskControllerTest {
 
         mockMvc.perform(request)
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testCreateWithoutAssignee() throws Exception {
+        var title = "Постирать одежду";
+        var content = "some content";
+        var status = "draft";
+        Long assigneeId = null;
+
+        var map = new HashMap<String, Object>();
+        map.put("title", title);
+        map.put("content", content);
+        map.put("status", status);
+        map.put("assignee_id", assigneeId);
+
+        var request = post("/api/tasks")
+                .header("Authorization", token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(map));
+
+        var result = mockMvc.perform(request)
+                .andExpect(status().isCreated())
+                .andReturn();
+
+        var resultTaskDto
+                = objectMapper.readValue(result.getResponse().getContentAsString(), TaskDTO.class);
+
+        assertEquals(title, resultTaskDto.getTitle());
+        assertEquals(content, resultTaskDto.getContent());
+        assertEquals(status, resultTaskDto.getStatus());
+        assertNull(resultTaskDto.getAssigneeId());
+
+        var taskFromRepository = taskMapper.map(taskRepository.findById(resultTaskDto.getId()).orElseThrow());
+
+        assertEquals(title, taskFromRepository.getTitle());
+        assertEquals(content, taskFromRepository.getContent());
+        assertEquals(status, taskFromRepository.getStatus());
+        assertNull(taskFromRepository.getAssigneeId());
     }
 
     @Test
