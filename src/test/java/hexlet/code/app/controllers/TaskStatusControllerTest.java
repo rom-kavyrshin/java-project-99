@@ -3,12 +3,14 @@ package hexlet.code.app.controllers;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hexlet.code.app.ModelGenerator;
+import hexlet.code.app.dto.task.TaskCreateDTO;
 import hexlet.code.app.dto.task_status.TaskStatusCreateDTO;
 import hexlet.code.app.dto.task_status.TaskStatusDTO;
 import hexlet.code.app.dto.task_status.TaskStatusUpdateDTO;
 import hexlet.code.app.mapper.TaskStatusMapper;
 import hexlet.code.app.model.TaskStatus;
 import hexlet.code.app.repositories.TaskStatusRepository;
+import hexlet.code.app.service.TaskService;
 import net.datafaker.Faker;
 import org.instancio.Instancio;
 import org.junit.jupiter.api.AfterEach;
@@ -56,6 +58,9 @@ public class TaskStatusControllerTest {
 
     @Autowired
     private TaskStatusMapper taskStatusMapper;
+
+    @Autowired
+    private TaskService taskService;
 
     @Autowired
     private Faker faker;
@@ -365,5 +370,27 @@ public class TaskStatusControllerTest {
                 .andExpect(status().isNoContent());
 
         assertTrue(taskStatusRepository.findById(taskStatusId).isEmpty());
+    }
+
+    @Test
+    void testDeleteTaskStatusWithTask() throws Exception {
+        var taskStatusForDelete = taskStatusRepository.findBySlug(testTaskStatus.getSlug()).orElseThrow();
+        var taskStatusId = taskStatusForDelete.getId();
+
+        var taskDto = taskService.create(
+                new TaskCreateDTO(123L, "Test task", "Test task 42", taskStatusForDelete.getSlug(), null)
+        );
+
+        assertTrue(taskStatusRepository.findById(taskStatusId).isPresent());
+
+        mockMvc.perform(get("/api/task_statuses/" + taskStatusId).header("Authorization", token))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(delete("/api/task_statuses/" + taskStatusId).header("Authorization", token))
+                .andExpect(status().isBadRequest());
+
+        assertTrue(taskStatusRepository.findById(taskStatusId).isPresent());
+
+        taskService.delete(taskDto.getId());
     }
 }
