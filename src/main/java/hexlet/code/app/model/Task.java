@@ -15,6 +15,8 @@ import jakarta.validation.constraints.Size;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -45,10 +47,12 @@ public class Task implements BaseEntity {
 
     @NotNull
     @JoinColumn(nullable = false)
-    @ManyToOne
+    @ManyToOne(optional = false)
     private TaskStatus taskStatus;
 
-    @ManyToOne
+    @JoinColumn(nullable = true)
+    @ManyToOne(optional = true)
+    @OnDelete(action = OnDeleteAction.RESTRICT)
     private User assignee;
 
     @CreatedDate
