@@ -4,7 +4,7 @@ import hexlet.code.app.component.CustomValidator;
 import hexlet.code.app.dto.user.UserCreateDTO;
 import hexlet.code.app.dto.user.UserDTO;
 import hexlet.code.app.dto.user.UserUpdateDTO;
-import hexlet.code.app.exception.CantDeleteUserException;
+import hexlet.code.app.exception.UnableDeleteException;
 import hexlet.code.app.exception.ResourceNotFoundException;
 import hexlet.code.app.mapper.UserMapper;
 import hexlet.code.app.repositories.UserRepository;
@@ -72,7 +72,7 @@ public class UserService implements UserDetailsManager {
 
     @PreAuthorize("@userUtils.isOwner(#id)")
     public void delete(long id) {
-        userRepository.deleteByIdOrThrow(id, new CantDeleteUserException("Can't delete user with id " + id));
+        userRepository.deleteByIdOrThrow(id, new UnableDeleteException("Can't delete user with id " + id));
     }
 
     @Override
