@@ -4,6 +4,7 @@ import hexlet.code.app.component.CustomValidator;
 import hexlet.code.app.dto.task_status.TaskStatusCreateDTO;
 import hexlet.code.app.dto.task_status.TaskStatusDTO;
 import hexlet.code.app.dto.task_status.TaskStatusUpdateDTO;
+import hexlet.code.app.exception.CantDeleteUserException;
 import hexlet.code.app.exception.ResourceNotFoundException;
 import hexlet.code.app.mapper.TaskStatusMapper;
 import hexlet.code.app.repositories.TaskStatusRepository;
@@ -60,6 +61,6 @@ public class TaskStatusService {
     }
 
     public void delete(long id) {
-        taskStatusRepository.deleteById(id);
+        taskStatusRepository.deleteByIdOrThrow(id, new CantDeleteUserException("Can't delete TaskStatus with id " + id));
     }
 }
