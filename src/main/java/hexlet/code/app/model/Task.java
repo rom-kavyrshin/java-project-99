@@ -48,6 +48,7 @@ public class Task implements BaseEntity {
     @NotNull
     @JoinColumn(nullable = false)
     @ManyToOne(optional = false)
+    @OnDelete(action = OnDeleteAction.RESTRICT)
     private TaskStatus taskStatus;
 
     @JoinColumn(nullable = true)
