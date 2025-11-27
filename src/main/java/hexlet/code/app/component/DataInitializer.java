@@ -1,9 +1,12 @@
 package hexlet.code.app.component;
 
+import hexlet.code.app.dto.label.LabelCreateDTO;
 import hexlet.code.app.dto.task_status.TaskStatusCreateDTO;
 import hexlet.code.app.dto.user.UserCreateDTO;
+import hexlet.code.app.mapper.LabelMapper;
 import hexlet.code.app.mapper.TaskStatusMapper;
 import hexlet.code.app.mapper.UserMapper;
+import hexlet.code.app.repositories.LabelRepository;
 import hexlet.code.app.repositories.TaskStatusRepository;
 import hexlet.code.app.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,6 +25,9 @@ public class DataInitializer implements ApplicationRunner {
     private final TaskStatusRepository taskStatusRepository;
     private final TaskStatusMapper taskStatusMapper;
 
+    private final LabelRepository labelRepository;
+    private final LabelMapper labelMapper;
+
     @Value("${default-user.password}")
     private String defaultUserPassword;
 
@@ -29,18 +35,23 @@ public class DataInitializer implements ApplicationRunner {
             UserRepository userRepository,
             UserMapper userMapper,
             TaskStatusRepository taskStatusRepository,
-            TaskStatusMapper taskStatusMapper
+            TaskStatusMapper taskStatusMapper,
+            LabelRepository labelRepository,
+            LabelMapper labelMapper
     ) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
         this.taskStatusRepository = taskStatusRepository;
         this.taskStatusMapper = taskStatusMapper;
+        this.labelRepository = labelRepository;
+        this.labelMapper = labelMapper;
     }
 
     @Override
     public void run(ApplicationArguments args) {
         createDefaultUser(args);
         createDefaultTaskStatuses(args);
+        createDefaultLabels(args);
     }
 
     public void createDefaultUser(ApplicationArguments args) {
@@ -65,6 +76,16 @@ public class DataInitializer implements ApplicationRunner {
             taskStatusRepository.save(taskStatusMapper.map(toBeFixed));
             taskStatusRepository.save(taskStatusMapper.map(toPublish));
             taskStatusRepository.save(taskStatusMapper.map(published));
+        }
+    }
+
+    public void createDefaultLabels(ApplicationArguments args) {
+        if (labelRepository.count() == 0) {
+            var feature = new LabelCreateDTO("feature");
+            var bug = new LabelCreateDTO("bug");
+
+            labelRepository.save(labelMapper.map(feature));
+            labelRepository.save(labelMapper.map(bug));
         }
     }
 }
