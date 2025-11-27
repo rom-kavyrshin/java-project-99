@@ -1,5 +1,7 @@
 package hexlet.code.app;
 
+import hexlet.code.app.dto.label.LabelCreateDTO;
+import hexlet.code.app.dto.label.LabelUpdateDTO;
 import hexlet.code.app.dto.task.TaskCreateDTO;
 import hexlet.code.app.dto.task.TaskDTO;
 import hexlet.code.app.dto.task.TaskUpdateDTO;
@@ -38,6 +40,9 @@ public class ModelGenerator {
     private Model<TaskCreateDTO> taskCreateDTOModel;
     private Model<TaskUpdateDTO> taskUpdateDTOModel;
 
+    private Model<LabelCreateDTO> labelCreateDTOModel;
+    private Model<LabelUpdateDTO> labelUpdateDTOModel;
+
     @Autowired
     private Faker faker;
 
@@ -52,6 +57,7 @@ public class ModelGenerator {
         initUserModels();
         initTaskStatusModels();
         initTaskModels();
+        initLabelModels();
     }
 
     private void initUserModels() {
@@ -128,6 +134,19 @@ public class ModelGenerator {
                 .supply(
                         Select.field(TaskCreateDTO::getAssigneeId),
                         () -> JsonNullable.of(getUserIdFromRepositoryOrNull())
+                )
+                .toModel();
+    }
+
+    private void initLabelModels() {
+        labelCreateDTOModel = Instancio.of(LabelCreateDTO.class)
+                .supply(Select.field(LabelCreateDTO::getName), () -> faker.text().text(3, 1000))
+                .toModel();
+
+        labelUpdateDTOModel = Instancio.of(LabelUpdateDTO.class)
+                .supply(
+                        Select.field(LabelUpdateDTO::getName),
+                        () -> JsonNullable.of(faker.text().text(3, 1000))
                 )
                 .toModel();
     }
