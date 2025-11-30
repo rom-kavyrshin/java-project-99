@@ -7,6 +7,7 @@ import hexlet.code.app.dto.task.TaskUpdateDTO;
 import hexlet.code.app.exception.ResourceNotFoundException;
 import hexlet.code.app.mapper.TaskMapper;
 import hexlet.code.app.repositories.TaskRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -28,12 +29,14 @@ public class TaskService {
         this.validator = validator;
     }
 
+    @Transactional
     public List<TaskDTO> getAll() {
         return taskRepository.findAll().stream()
                 .map(taskMapper::map)
                 .toList();
     }
 
+    @Transactional
     public TaskDTO getById(long id) {
         return taskRepository.findById(id)
                 .map(taskMapper::map)
