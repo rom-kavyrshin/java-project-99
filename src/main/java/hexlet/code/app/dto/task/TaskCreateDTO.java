@@ -9,6 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -29,4 +31,6 @@ public class TaskCreateDTO {
 
     @JsonProperty("assignee_id")
     private Long assigneeId;
+
+    private List<Long> taskLabelIds;
 }

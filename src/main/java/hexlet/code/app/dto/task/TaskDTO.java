@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -22,6 +23,8 @@ public class TaskDTO {
 
     @JsonProperty("assignee_id")
     private Long assigneeId;
+
+    private List<Long> taskLabelIds;
 
     private LocalDateTime createdAt;
 }
