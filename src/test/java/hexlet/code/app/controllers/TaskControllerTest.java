@@ -427,6 +427,9 @@ public class TaskControllerTest {
         assertEquals(JsonNullable.class, taskUpdateDTO.getAssigneeId().getClass());
         checkMap.remove("assignee_id");
 
+        assertEquals(JsonNullable.class, taskUpdateDTO.getTaskLabelIds().getClass());
+        checkMap.remove("taskLabelIds");
+
         assertTrue(checkMap.isEmpty());
     }
 
