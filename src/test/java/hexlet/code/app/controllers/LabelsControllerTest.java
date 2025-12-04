@@ -328,4 +328,13 @@ public class LabelsControllerTest {
 
         assertTrue(labelRepository.findById(labelId).isEmpty());
     }
+
+    @Test
+    void testGetByName() {
+        var label = labelMapper.map(testLabel);
+        var labelName = label.getName();
+
+        assertTrue(labelRepository.findByName(labelName).isPresent());
+        assertEquals(label.getId(), labelRepository.findByName(labelName).orElseThrow().getId());
+    }
 }
