@@ -5,12 +5,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import hexlet.code.app.ModelGenerator;
 import hexlet.code.app.dto.task.TaskDTO;
 import hexlet.code.app.dto.task.TaskUpdateDTO;
-import hexlet.code.app.mapper.TaskMapper;
 import hexlet.code.app.mapper.UserMapper;
-import hexlet.code.app.model.Task;
 import hexlet.code.app.model.User;
 import hexlet.code.app.repositories.TaskRepository;
 import hexlet.code.app.repositories.UserRepository;
+import hexlet.code.app.service.TaskService;
 import net.datafaker.Faker;
 import org.instancio.Instancio;
 import org.junit.jupiter.api.AfterEach;
@@ -58,10 +57,10 @@ public class TaskControllerTest {
     private TaskRepository taskRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    private TaskService taskService;
 
     @Autowired
-    private TaskMapper taskMapper;
+    private UserRepository userRepository;
 
     @Autowired
     private UserMapper userMapper;
@@ -83,7 +82,7 @@ public class TaskControllerTest {
     private static final int USER_LIST_SIZE = 4;
     private static final int TASK_LIST_SIZE = 20;
 
-    private Task testTask;
+    private TaskDTO testTask;
     private final ArrayList<User> usersList = new ArrayList<>();
 
     @BeforeEach
@@ -108,11 +107,11 @@ public class TaskControllerTest {
 
         for (int i = 0; i < TASK_LIST_SIZE; i++) {
             var task = Instancio.of(modelGenerator.getTaskCreateDTOModel()).create();
-            taskRepository.save(taskMapper.map(task));
+            taskService.create(task);
         }
 
         var testTaskDTO = Instancio.of(modelGenerator.getTaskCreateDTOModel()).create();
-        testTask = taskRepository.save(taskMapper.map(testTaskDTO));
+        testTask = taskService.create(testTaskDTO);
     }
 
     void setupToken() throws Exception {
@@ -141,7 +140,7 @@ public class TaskControllerTest {
 
     @Test
     void testShow() throws Exception {
-        var taskForShow = taskMapper.map(testTask);
+        var taskForShow = testTask;
 
         var result = mockMvc.perform(get("/api/tasks/" + testTask.getId()).header("Authorization", token))
                 .andExpect(status().isOk())
@@ -161,10 +160,10 @@ public class TaskControllerTest {
 
     @Test
     void testShowWithNonExistId() throws Exception {
-        var list = taskRepository.findAll();
+        var list = taskService.getAll();
         var taskId = list.get(list.size() / 2).getId();
 
-        taskRepository.deleteById(taskId);
+        taskService.delete(taskId);
 
         mockMvc.perform(get("/api/tasks/" + taskId).header("Authorization", token))
                 .andExpect(status().isNotFound());
@@ -193,7 +192,7 @@ public class TaskControllerTest {
         assertEquals(taskCreateDTO.getStatus(), resultTaskDto.getStatus());
         assertEquals(taskCreateDTO.getAssigneeId(), resultTaskDto.getAssigneeId());
 
-        var taskFromRepository = taskMapper.map(taskRepository.findById(resultTaskDto.getId()).orElseThrow());
+        var taskFromRepository = taskService.getById(resultTaskDto.getId());
 
         assertEquals(taskCreateDTO.getIndex(), taskFromRepository.getIndex());
         assertEquals(taskCreateDTO.getTitle(), taskFromRepository.getTitle());
@@ -312,7 +311,7 @@ public class TaskControllerTest {
         assertEquals(status, resultTaskDto.getStatus());
         assertNull(resultTaskDto.getAssigneeId());
 
-        var taskFromRepository = taskMapper.map(taskRepository.findById(resultTaskDto.getId()).orElseThrow());
+        var taskFromRepository = taskService.getById(resultTaskDto.getId());
 
         assertEquals(title, taskFromRepository.getTitle());
         assertEquals(content, taskFromRepository.getContent());
@@ -322,7 +321,7 @@ public class TaskControllerTest {
 
     @Test
     void testUpdate() throws Exception {
-        var taskForUpdate = taskMapper.map(testTask);
+        var taskForUpdate = testTask;
         var taskId = testTask.getId();
 
         var newTaskData = modelGenerator.getFullyDifferentTask(taskForUpdate);
@@ -351,7 +350,7 @@ public class TaskControllerTest {
         assertEquals(newTaskData.getStatus().get(), resultTaskDto.getStatus());
         assertEquals(newTaskData.getAssigneeId().get(), resultTaskDto.getAssigneeId());
 
-        taskForUpdate = taskMapper.map(taskRepository.findById(taskId).orElseThrow());
+        taskForUpdate = taskService.getById(taskId);
 
         assertEquals(newTaskData.getIndex().get(), taskForUpdate.getIndex());
         assertEquals(newTaskData.getTitle().get(), taskForUpdate.getTitle());
@@ -362,7 +361,7 @@ public class TaskControllerTest {
 
     @Test
     void testPartlyUpdate() throws Exception {
-        var taskForUpdate = taskMapper.map(testTask);
+        var taskForUpdate = testTask;
         var taskId = taskForUpdate.getId();
 
         var newTitle = "Updated";
@@ -395,7 +394,7 @@ public class TaskControllerTest {
         assertEquals(taskForUpdate.getAssigneeId(), resultTaskDto.getAssigneeId());
         assertTrue(Duration.between(taskForUpdate.getCreatedAt(), resultTaskDto.getCreatedAt()).abs().toMillis() < 1);
 
-        var updatedTask = taskMapper.map(taskRepository.findById(taskId).orElseThrow());
+        var updatedTask = taskService.getById(taskId);
 
         assertEquals(taskForUpdate.getId(), updatedTask.getId());
         assertEquals(taskForUpdate.getIndex(), updatedTask.getIndex());
@@ -435,32 +434,32 @@ public class TaskControllerTest {
 
     @Test
     void testUpdateToNullRequiredFields() throws Exception {
-        var taskForUpdate = taskMapper.map(testTask);
+        var taskForUpdate = testTask;
         var taskId = taskForUpdate.getId();
 
         String newTitle = null;
 
         assertNotEquals(newTitle, taskForUpdate.getTitle());
 
-        var partNewTaskStatusData = new TaskUpdateDTO();
-        partNewTaskStatusData.setTitle(JsonNullable.of(newTitle));
+        var partNewTaskData = new TaskUpdateDTO();
+        partNewTaskData.setTitle(JsonNullable.of(newTitle));
 
         var request = put("/api/tasks/" + taskId)
                 .header("Authorization", token)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(partNewTaskStatusData));
+                .content(objectMapper.writeValueAsString(partNewTaskData));
 
         mockMvc.perform(request)
                 .andExpect(status().isBadRequest());
 
-        taskForUpdate = taskMapper.map(taskRepository.findById(taskId).orElseThrow());
+        taskForUpdate = taskService.getById(taskId);
 
         assertNotEquals(newTitle, taskForUpdate.getTitle());
     }
 
     @Test
     void testUpdateToInvalidTitle() throws Exception {
-        var taskForUpdate = taskMapper.map(testTask);
+        var taskForUpdate = testTask;
         var taskId = taskForUpdate.getId();
 
         String newTitle = "";
@@ -478,14 +477,14 @@ public class TaskControllerTest {
         mockMvc.perform(request)
                 .andExpect(status().isBadRequest());
 
-        taskForUpdate = taskMapper.map(taskRepository.findById(taskId).orElseThrow());
+        taskForUpdate = taskService.getById(taskId);
 
         assertNotEquals(newTitle, taskForUpdate.getTitle());
     }
 
     @Test
     void testDelete() throws Exception {
-        var taskForUpdate = taskMapper.map(testTask);
+        var taskForUpdate = testTask;
         var taskId = taskForUpdate.getId();
 
         assertTrue(taskRepository.findById(taskId).isPresent());
