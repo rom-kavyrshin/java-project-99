@@ -25,6 +25,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -378,7 +379,7 @@ public class TaskStatusControllerTest {
         var taskStatusId = taskStatusForDelete.getId();
 
         var taskDto = taskService.create(
-                new TaskCreateDTO(123L, "Test task", "Test task 42", taskStatusForDelete.getSlug(), null)
+                new TaskCreateDTO(123L, "Test task", "Test task 42", taskStatusForDelete.getSlug(), null, Collections.emptyList())
         );
 
         assertTrue(taskStatusRepository.findById(taskStatusId).isPresent());

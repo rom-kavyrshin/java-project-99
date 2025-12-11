@@ -22,6 +22,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -445,7 +446,7 @@ public class UserControllerTest {
         var userId = userForDelete.getId();
 
         var taskDto = taskService.create(
-                new TaskCreateDTO(123L, "Test task", "Test task 42", "draft", userForDelete.getId())
+                new TaskCreateDTO(123L, "Test task", "Test task 42", "draft", userForDelete.getId(), Collections.emptyList())
         );
 
         assertTrue(userRepository.findById(userId).isPresent());
