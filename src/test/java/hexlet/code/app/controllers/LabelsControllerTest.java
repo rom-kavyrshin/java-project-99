@@ -186,9 +186,9 @@ public class LabelsControllerTest {
 
         assertEquals(labelCreateDTO.getName(), resultLabelDto.getName());
 
-        var taskFromRepository = labelMapper.map(labelRepository.findById(resultLabelDto.getId()).orElseThrow());
+        var labelFromRepository = labelMapper.map(labelRepository.findById(resultLabelDto.getId()).orElseThrow());
 
-        assertEquals(labelCreateDTO.getName(), taskFromRepository.getName());
+        assertEquals(labelCreateDTO.getName(), labelFromRepository.getName());
     }
 
     @Test
