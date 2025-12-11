@@ -9,8 +9,10 @@ import hexlet.code.app.dto.task_status.TaskStatusCreateDTO;
 import hexlet.code.app.dto.task_status.TaskStatusUpdateDTO;
 import hexlet.code.app.dto.user.UserCreateDTO;
 import hexlet.code.app.dto.user.UserUpdateDTO;
+import hexlet.code.app.model.Label;
 import hexlet.code.app.model.TaskStatus;
 import hexlet.code.app.model.User;
+import hexlet.code.app.repositories.LabelRepository;
 import hexlet.code.app.repositories.TaskStatusRepository;
 import hexlet.code.app.repositories.UserRepository;
 import jakarta.annotation.PostConstruct;
@@ -24,6 +26,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.security.SecureRandom;
+import java.util.Collections;
+import java.util.List;
 
 @Getter
 @Component
@@ -51,6 +55,9 @@ public class ModelGenerator {
 
     @Autowired
     private TaskStatusRepository taskStatusRepository;
+
+    @Autowired
+    private LabelRepository labelRepository;
 
     @PostConstruct
     private void init() {
@@ -112,6 +119,7 @@ public class ModelGenerator {
                 .supply(Select.field(TaskCreateDTO::getContent), () -> faker.departed().quote())
                 .supply(Select.field(TaskCreateDTO::getStatus), () -> getStatusSlugFromRepository())
                 .supply(Select.field(TaskCreateDTO::getAssigneeId), () -> getUserIdFromRepositoryOrNull())
+                .supply(Select.field(TaskCreateDTO::getTaskLabelIds), () -> getTaskLabelIdsFromRepository())
                 .toModel();
 
         taskUpdateDTOModel = Instancio.of(TaskUpdateDTO.class)
@@ -134,6 +142,10 @@ public class ModelGenerator {
                 .supply(
                         Select.field(TaskCreateDTO::getAssigneeId),
                         () -> JsonNullable.of(getUserIdFromRepositoryOrNull())
+                )
+                .supply(
+                        Select.field(TaskCreateDTO::getTaskLabelIds),
+                        () -> JsonNullable.of(getTaskLabelIdsFromRepository())
                 )
                 .toModel();
     }
@@ -186,5 +198,25 @@ public class ModelGenerator {
 
         var taskStatuses = taskStatusRepository.findAll().stream().filter(it -> !it.getSlug().equals(filter)).toList();
         return taskStatuses.get(random.nextInt(taskStatuses.size())).getSlug();
+    }
+
+    private List<Long> getTaskLabelIdsFromRepository() {
+        return getTaskLabelIdsFromRepository(Collections.emptyList());
+    }
+
+    private List<Long> getTaskLabelIdsFromRepository(List<Long> filter) {
+        var random = new SecureRandom();
+
+        if (random.nextBoolean()) {
+
+            return labelRepository.findAll()
+                    .stream()
+                    .filter(it -> !filter.contains(it.getId()))
+                    .filter(it -> random.nextBoolean())
+                    .map(Label::getId)
+                    .toList();
+        }
+
+        return null;
     }
 }
