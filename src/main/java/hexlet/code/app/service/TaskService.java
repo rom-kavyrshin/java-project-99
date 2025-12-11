@@ -47,7 +47,7 @@ public class TaskService {
         validator.validate(taskCreateDTO);
 
         var task = taskMapper.map(taskCreateDTO);
-        taskRepository.save(task);
+        task = taskRepository.save(task);
         return taskMapper.map(task);
     }
 
@@ -57,7 +57,7 @@ public class TaskService {
         var task = taskRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Task with id " + id + " not found"));
         taskMapper.update(taskUpdateDTO, task);
-        taskRepository.save(task);
+        task = taskRepository.save(task);
 
         return taskMapper.map(task);
     }
