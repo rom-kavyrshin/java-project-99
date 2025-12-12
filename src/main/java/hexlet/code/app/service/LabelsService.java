@@ -5,6 +5,7 @@ import hexlet.code.app.dto.label.LabelCreateDTO;
 import hexlet.code.app.dto.label.LabelDTO;
 import hexlet.code.app.dto.label.LabelUpdateDTO;
 import hexlet.code.app.exception.ResourceNotFoundException;
+import hexlet.code.app.exception.UnableDeleteException;
 import hexlet.code.app.mapper.LabelMapper;
 import hexlet.code.app.repositories.LabelRepository;
 import org.springframework.stereotype.Service;
@@ -60,6 +61,6 @@ public class LabelsService {
     }
 
     public void delete(long id) {
-        labelRepository.deleteById(id);
+        labelRepository.deleteByIdOrThrow(id, new UnableDeleteException("Can't delete label with id " + id));
     }
 }
