@@ -12,6 +12,7 @@ import hexlet.code.app.repositories.TaskRepository;
 import hexlet.code.app.repositories.UserRepository;
 import hexlet.code.app.service.LabelsService;
 import hexlet.code.app.service.TaskService;
+import lombok.extern.slf4j.Slf4j;
 import net.datafaker.Faker;
 import org.instancio.Instancio;
 import org.junit.jupiter.api.AfterEach;
@@ -46,6 +47,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@Slf4j
 @SpringBootTest
 @AutoConfigureMockMvc
 public class TaskControllerTest {
