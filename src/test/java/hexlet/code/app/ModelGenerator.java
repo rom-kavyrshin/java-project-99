@@ -170,6 +170,7 @@ public class ModelGenerator {
         result.setContent(JsonNullable.of(original.getContent() + " updated"));
         result.setStatus(JsonNullable.of(getStatusSlugFromRepository(original.getStatus())));
         result.setAssigneeId(JsonNullable.of(getUserIdFromRepositoryOrNull(original.getAssigneeId())));
+        result.setTaskLabelIds(JsonNullable.of(getTaskLabelIdsFromRepository(original.getTaskLabelIds())));
 
         return result;
     }
