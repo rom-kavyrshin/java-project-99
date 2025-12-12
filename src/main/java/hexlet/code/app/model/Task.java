@@ -1,6 +1,5 @@
 package hexlet.code.app.model;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -61,7 +60,7 @@ public class Task implements BaseEntity {
     @OnDelete(action = OnDeleteAction.RESTRICT)
     private User assignee;
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "task_label",
             joinColumns = @JoinColumn(name = "task_id"),
