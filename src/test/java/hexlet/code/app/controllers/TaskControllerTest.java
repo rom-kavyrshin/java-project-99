@@ -3,12 +3,14 @@ package hexlet.code.app.controllers;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hexlet.code.app.ModelGenerator;
+import hexlet.code.app.dto.label.LabelDTO;
 import hexlet.code.app.dto.task.TaskDTO;
 import hexlet.code.app.dto.task.TaskUpdateDTO;
 import hexlet.code.app.mapper.UserMapper;
 import hexlet.code.app.model.User;
 import hexlet.code.app.repositories.TaskRepository;
 import hexlet.code.app.repositories.UserRepository;
+import hexlet.code.app.service.LabelsService;
 import hexlet.code.app.service.TaskService;
 import net.datafaker.Faker;
 import org.instancio.Instancio;
@@ -60,6 +62,9 @@ public class TaskControllerTest {
     private TaskService taskService;
 
     @Autowired
+    private LabelsService labelService;
+
+    @Autowired
     private UserRepository userRepository;
 
     @Autowired
@@ -81,9 +86,11 @@ public class TaskControllerTest {
 
     private static final int USER_LIST_SIZE = 4;
     private static final int TASK_LIST_SIZE = 20;
+    private static final int LABEL_LIST_SIZE = 20;
 
     private TaskDTO testTask;
     private final ArrayList<User> usersList = new ArrayList<>();
+    private final ArrayList<LabelDTO> labelsList = new ArrayList<>();
 
     @BeforeEach
     void setupTest() throws Exception {
@@ -95,6 +102,10 @@ public class TaskControllerTest {
     void cleanup() {
         taskRepository.deleteAll();
         userRepository.deleteAll(usersList);
+
+        for (LabelDTO label : labelsList) {
+            labelService.delete(label.getId());
+        }
     }
 
     void setupMocks() {
@@ -104,6 +115,12 @@ public class TaskControllerTest {
         }
 
         userRepository.saveAll(usersList);
+
+        for (int i = 0; i < LABEL_LIST_SIZE; i++) {
+            var label = Instancio.of(modelGenerator.getLabelCreateDTOModel()).create();
+            var labelDto = labelService.create(label);
+            labelsList.add(labelDto);
+        }
 
         for (int i = 0; i < TASK_LIST_SIZE; i++) {
             var task = Instancio.of(modelGenerator.getTaskCreateDTOModel()).create();
@@ -331,6 +348,7 @@ public class TaskControllerTest {
         assertThat(taskForUpdate.getContent(), not(newTaskData.getContent()));
         assertThat(taskForUpdate.getStatus(), not(newTaskData.getStatus()));
         assertThat(taskForUpdate.getAssigneeId(), not(newTaskData.getAssigneeId()));
+        assertThat(taskForUpdate.getTaskLabelIds(), not(newTaskData.getTaskLabelIds()));
 
         var request = put("/api/tasks/" + taskId)
                 .header("Authorization", token)
@@ -349,6 +367,7 @@ public class TaskControllerTest {
         assertEquals(newTaskData.getContent().get(), resultTaskDto.getContent());
         assertEquals(newTaskData.getStatus().get(), resultTaskDto.getStatus());
         assertEquals(newTaskData.getAssigneeId().get(), resultTaskDto.getAssigneeId());
+        assertEquals(newTaskData.getTaskLabelIds().get(), resultTaskDto.getTaskLabelIds());
 
         taskForUpdate = taskService.getById(taskId);
 
@@ -357,6 +376,7 @@ public class TaskControllerTest {
         assertEquals(newTaskData.getContent().get(), taskForUpdate.getContent());
         assertEquals(newTaskData.getStatus().get(), taskForUpdate.getStatus());
         assertEquals(newTaskData.getAssigneeId().get(), taskForUpdate.getAssigneeId());
+        assertEquals(newTaskData.getTaskLabelIds().get(), taskForUpdate.getTaskLabelIds());
     }
 
     @Test
