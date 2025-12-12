@@ -207,7 +207,7 @@ public class ModelGenerator {
     private List<Long> getTaskLabelIdsFromRepository(List<Long> filter) {
         var random = new SecureRandom();
 
-        if (random.nextBoolean()) {
+        if (random.nextInt(100) < 80) {
 
             return labelRepository.findAll()
                     .stream()
@@ -217,6 +217,6 @@ public class ModelGenerator {
                     .toList();
         }
 
-        return null;
+        return Collections.emptyList();
     }
 }
