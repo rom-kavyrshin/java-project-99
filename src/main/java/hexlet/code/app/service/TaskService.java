@@ -45,6 +45,7 @@ public class TaskService {
                 .orElseThrow(() -> new ResourceNotFoundException("Task with id " + id + " not found"));
     }
 
+    @Transactional
     public TaskDTO create(TaskCreateDTO taskCreateDTO) {
         validator.validate(taskCreateDTO);
 
@@ -53,6 +54,7 @@ public class TaskService {
         return taskMapper.map(task);
     }
 
+    @Transactional
     public TaskDTO update(long id, TaskUpdateDTO taskUpdateDTO) {
         validator.validate(taskUpdateDTO);
 
