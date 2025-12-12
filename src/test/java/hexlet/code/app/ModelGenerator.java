@@ -95,20 +95,20 @@ public class ModelGenerator {
 
     private void initTaskStatusModels() {
         taskStatusCreateDTOModel = Instancio.of(TaskStatusCreateDTO.class)
-                .supply(Select.field(TaskStatusCreateDTO::getName), () -> faker.internet().slug())
-                .supply(Select.field(TaskStatusCreateDTO::getSlug), () -> faker.internet().slug())
+                .supply(Select.field(TaskStatusCreateDTO::getName), () -> faker.text().text(1, 20))
+                .supply(Select.field(TaskStatusCreateDTO::getSlug), () -> faker.text().text(1, 20))
                 .toModel();
 
         taskStatusUpdateDTOModel = Instancio.of(TaskStatusUpdateDTO.class)
-                .supply(Select.field(TaskStatusUpdateDTO::getName), () -> JsonNullable.of(faker.internet().slug()))
-                .supply(Select.field(TaskStatusUpdateDTO::getSlug), () -> JsonNullable.of(faker.internet().slug()))
+                .supply(Select.field(TaskStatusUpdateDTO::getName), () -> JsonNullable.of(faker.text().text(1, 20)))
+                .supply(Select.field(TaskStatusUpdateDTO::getSlug), () -> JsonNullable.of(faker.text().text(1, 20)))
                 .toModel();
 
         taskStatusModel = Instancio.of(TaskStatus.class)
                 .ignore(Select.field(TaskStatus::getId))
                 .ignore(Select.field(TaskStatus::getCreatedAt))
-                .supply(Select.field(TaskStatus::getName), () -> faker.internet().slug())
-                .supply(Select.field(TaskStatus::getSlug), () -> faker.internet().slug())
+                .supply(Select.field(TaskStatus::getName), () -> faker.text().text(1, 20))
+                .supply(Select.field(TaskStatus::getSlug), () -> faker.text().text(1, 20))
                 .toModel();
     }
 
