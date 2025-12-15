@@ -3,6 +3,7 @@ package hexlet.code.app.mapper;
 import hexlet.code.app.dto.task.TaskCreateDTO;
 import hexlet.code.app.dto.task.TaskDTO;
 import hexlet.code.app.dto.task.TaskUpdateDTO;
+import hexlet.code.app.exception.DependentResourceNotFoundException;
 import hexlet.code.app.model.Label;
 import hexlet.code.app.model.Task;
 import hexlet.code.app.repositories.LabelRepository;
@@ -16,7 +17,9 @@ import org.mapstruct.ReportingPolicy;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Mapper(
@@ -70,6 +73,16 @@ public abstract class TaskMapper {
         if (labelIds == null) {
             return Collections.emptyList();
         }
-        return labelRepository.findAllById(labelIds);
+        List<Label> result = labelRepository.findAllById(labelIds);
+
+        if (labelIds.size() != result.size()) {
+            Set<Long> deleted = new HashSet<>(labelIds);
+            deleted.removeAll(result.stream().map(Label::getId).collect(Collectors.toSet()));
+            throw new DependentResourceNotFoundException(
+                    "Labels with ids " + deleted + " not found"
+            );
+        }
+
+        return result;
     }
 }
