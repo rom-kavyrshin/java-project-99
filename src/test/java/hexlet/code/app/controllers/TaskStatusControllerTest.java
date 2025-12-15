@@ -379,7 +379,14 @@ public class TaskStatusControllerTest {
         var taskStatusId = taskStatusForDelete.getId();
 
         var taskDto = taskService.create(
-                new TaskCreateDTO(123L, "Test task", "Test task 42", taskStatusForDelete.getSlug(), null, Collections.emptyList())
+                new TaskCreateDTO(
+                        123L,
+                        "Test task",
+                        "Test task 42",
+                        taskStatusForDelete.getSlug(),
+                        null,
+                        Collections.emptyList()
+                )
         );
 
         assertTrue(taskStatusRepository.findById(taskStatusId).isPresent());
