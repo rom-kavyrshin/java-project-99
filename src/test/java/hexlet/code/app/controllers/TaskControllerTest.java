@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -36,6 +37,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -336,6 +338,36 @@ public class TaskControllerTest {
         assertEquals(content, taskFromRepository.getContent());
         assertEquals(status, taskFromRepository.getStatus());
         assertNull(taskFromRepository.getAssigneeId());
+    }
+
+    @Test
+    void testCreateWithInvalidLabelId() throws Exception {
+        var title = "Постирать одежду";
+        var content = "some content";
+        var status = "draft";
+        var wrongLabelId1 = 100500;
+        var wrongLabelId2 = 1500;
+
+        var map = new HashMap<String, Object>();
+        map.put("title", title);
+        map.put("content", content);
+        map.put("status", status);
+        map.put("taskLabelIds", new int[]{1, 2, wrongLabelId1, wrongLabelId2});
+
+        var request = post("/api/tasks")
+                .header("Authorization", token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(map));
+
+        var result = mockMvc.perform(request).andReturn();
+        var resultContent = result.getResponse().getContentAsString();
+
+
+        assertEquals(HttpStatus.BAD_REQUEST.value(), result.getResponse().getStatus());
+        assertFalse(resultContent.contains(1 + ","));
+        assertFalse(resultContent.contains(2 + ","));
+        assertTrue(resultContent.contains(wrongLabelId1 + ""));
+        assertTrue(resultContent.contains(wrongLabelId2 + ""));
     }
 
     @Test
