@@ -41,6 +41,8 @@ public class SecurityConfig {
                         .requestMatchers("/", "/assets/**", "/index.html").permitAll()
                         .requestMatchers("/api/login").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
+                        .requestMatchers("/swagger-ui/**").permitAll()
+                        .requestMatchers("/v3/openapi-docs/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .headers(header -> header.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))

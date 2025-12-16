@@ -56,6 +56,7 @@ dependencies {
 	implementation("org.openapitools:jackson-databind-nullable:0.2.6")
     implementation("org.springframework.boot:spring-boot-starter-security:3.5.6")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server:3.5.6")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.14")
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	testImplementation("org.springframework.boot:spring-boot-starter-test:3.5.6")

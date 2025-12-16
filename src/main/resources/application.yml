@@ -15,3 +15,7 @@ default-user:
 rsa:
   public-key: classpath:certs/public.pem
   private-key-path: certs/private.pem.enc
+
+springdoc:
+  api-docs:
+    path: /v3/openapi-docs
