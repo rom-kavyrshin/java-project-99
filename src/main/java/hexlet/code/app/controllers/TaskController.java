@@ -2,6 +2,7 @@ package hexlet.code.app.controllers;
 
 import hexlet.code.app.dto.task.TaskCreateDTO;
 import hexlet.code.app.dto.task.TaskDTO;
+import hexlet.code.app.dto.task.TaskParamsDTO;
 import hexlet.code.app.dto.task.TaskUpdateDTO;
 import hexlet.code.app.service.TaskService;
 import org.springframework.http.HttpStatus;
@@ -28,8 +29,8 @@ public class TaskController {
     }
 
     @GetMapping(path = "")
-    public List<TaskDTO> index() {
-        return taskService.getAll();
+    public List<TaskDTO> index(TaskParamsDTO taskParamsDTO) {
+        return taskService.getAll(taskParamsDTO);
     }
 
     @GetMapping(path = "/{id}")

@@ -3,10 +3,12 @@ package hexlet.code.app.service;
 import hexlet.code.app.component.CustomValidator;
 import hexlet.code.app.dto.task.TaskCreateDTO;
 import hexlet.code.app.dto.task.TaskDTO;
+import hexlet.code.app.dto.task.TaskParamsDTO;
 import hexlet.code.app.dto.task.TaskUpdateDTO;
 import hexlet.code.app.exception.ResourceNotFoundException;
 import hexlet.code.app.mapper.TaskMapper;
 import hexlet.code.app.repositories.TaskRepository;
+import hexlet.code.app.specification.TaskSpecification;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,21 +21,24 @@ public class TaskService {
 
     private final TaskRepository taskRepository;
     private final TaskMapper taskMapper;
+    private final TaskSpecification taskSpecification;
     private final CustomValidator validator;
 
     public TaskService(
             TaskRepository taskRepository,
             TaskMapper taskMapper,
+            TaskSpecification taskSpecification,
             CustomValidator validator
     ) {
         this.taskRepository = taskRepository;
         this.taskMapper = taskMapper;
+        this.taskSpecification = taskSpecification;
         this.validator = validator;
     }
 
     @Transactional
-    public List<TaskDTO> getAll() {
-        return taskRepository.findAll().stream()
+    public List<TaskDTO> getAll(TaskParamsDTO params) {
+        return taskRepository.findAll(taskSpecification.build(params)).stream()
                 .map(taskMapper::map)
                 .toList();
     }

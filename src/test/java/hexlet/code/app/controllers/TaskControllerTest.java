@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import hexlet.code.app.ModelGenerator;
 import hexlet.code.app.dto.label.LabelDTO;
 import hexlet.code.app.dto.task.TaskDTO;
+import hexlet.code.app.dto.task.TaskParamsDTO;
 import hexlet.code.app.dto.task.TaskUpdateDTO;
 import hexlet.code.app.mapper.UserMapper;
 import hexlet.code.app.model.User;
@@ -181,7 +182,7 @@ public class TaskControllerTest {
 
     @Test
     void testShowWithNonExistId() throws Exception {
-        var list = taskService.getAll();
+        var list = taskService.getAll(new TaskParamsDTO());
         var taskId = list.get(list.size() / 2).getId();
 
         taskService.delete(taskId);
