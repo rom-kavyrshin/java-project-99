@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hexlet.code.app.ModelGenerator;
 import hexlet.code.app.dto.label.LabelDTO;
+import hexlet.code.app.dto.task.TaskCreateDTO;
 import hexlet.code.app.dto.task.TaskDTO;
 import hexlet.code.app.dto.task.TaskParamsDTO;
 import hexlet.code.app.dto.task.TaskUpdateDTO;
@@ -31,6 +32,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static hexlet.code.app.util.HeaderUtils.X_TOTAL_COUNT_HEADER_NAME;
@@ -158,6 +160,114 @@ public class TaskControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(header().string(X_TOTAL_COUNT_HEADER_NAME, "21"))
                 .andExpect(jsonPath("$").value(hasSize(21)));
+    }
+
+    private Long newTask(
+            Long index,
+            String title,
+            String content,
+            String status,
+            Long assigneeId,
+            List<Long> taskLabelIds
+    ) {
+        return taskService.create(
+                new TaskCreateDTO(
+                        index,
+                        title,
+                        content,
+                        status,
+                        assigneeId,
+                        taskLabelIds
+                )
+        ).getId();
+    }
+
+    @Test
+    void testIndexWithFilter() throws Exception {
+        taskRepository.deleteAll();
+
+        var firstUser = usersList.get(1);
+        var secondUser = usersList.get(2);
+
+        var firstLabel = labelsList.get(0).getId();
+        var secondLabel = labelsList.get(1).getId();
+        var thirdLabel = labelsList.get(2).getId();
+        var fourthLabel = labelsList.get(3).getId();
+
+        var firstId = newTask(1L, "Ремонт стола", "Отремонтировать стол. Заменит столешницу", "to_be_fixed", secondUser.getId(), List.of(fourthLabel));
+        var secondId = newTask(2L, "Прочистить раковину", "Вроде и так все понятно", "to_publish", firstUser.getId(), List.of(thirdLabel, fourthLabel));
+        var thirdId = newTask(null, "Почистить стиральную машину", "Профилактика", "draft", firstUser.getId(), List.of());
+        var fourthId = newTask(null, "Позавтракать", "Плотненький приём пищи", "to_publish", firstUser.getId(), List.of(firstLabel, secondLabel));
+        var fifthId = newTask(null, "Заказать еду", "Ну понятно", "to_publish", secondUser.getId(), List.of(secondLabel, thirdLabel));
+        var sixthId = newTask(null, "Купить одежду", "Освежить свой outfit", "to_publish", firstUser.getId(), List.of(thirdLabel));
+        var seventhId = newTask(null, "Дела", "Дела дела дела", "published", firstUser.getId(), List.of(firstLabel, fourthLabel));
+        var eighthId = newTask(null, "Обед", "Покушать", "published", null, List.of(firstLabel));
+        var ninthId = newTask(null, "Отдых", "Небольшой отдых на кроватке", "published", firstUser.getId(), List.of(fourthLabel));
+        var tenthId = newTask(null, "Снова дела", "Возвращаюсь к делам", "to_review", firstUser.getId(), List.of(secondLabel));
+        var eleventhId = newTask(null, "Продать старый стол", "Есть другой стол. Это не нужен и мешает", "draft", secondUser.getId(), List.of(secondLabel, fourthLabel));
+
+        mockMvc.perform(
+                get("/api/tasks")
+                        .queryParam("titleCont", "чист")
+                        .header("Authorization", token)
+                )
+                .andExpect(status().isOk())
+                .andExpect(header().string(X_TOTAL_COUNT_HEADER_NAME, "2"))
+                .andExpect(jsonPath("$").value(hasSize(2)))
+                .andExpect(jsonPath("$[0].id").value(secondId))
+                .andExpect(jsonPath("$[1].id").value(thirdId));
+
+        mockMvc.perform(
+                        get("/api/tasks")
+                                .queryParam("assigneeId", secondUser.getId() + "")
+                                .header("Authorization", token)
+                )
+                .andExpect(status().isOk())
+                .andExpect(header().string(X_TOTAL_COUNT_HEADER_NAME, "3"))
+                .andExpect(jsonPath("$").value(hasSize(3)))
+                .andExpect(jsonPath("$[0].id").value(firstId))
+                .andExpect(jsonPath("$[1].id").value(fifthId))
+                .andExpect(jsonPath("$[2].id").value(eleventhId));
+
+        mockMvc.perform(
+                        get("/api/tasks")
+                                .queryParam("status", "published")
+                                .header("Authorization", token)
+                )
+                .andExpect(status().isOk())
+                .andExpect(header().string(X_TOTAL_COUNT_HEADER_NAME, "3"))
+                .andExpect(jsonPath("$").value(hasSize(3)))
+                .andExpect(jsonPath("$[0].id").value(seventhId))
+                .andExpect(jsonPath("$[1].id").value(eighthId))
+                .andExpect(jsonPath("$[2].id").value(ninthId));
+
+        mockMvc.perform(
+                        get("/api/tasks")
+                                .queryParam("labelId", secondLabel + "")
+                                .header("Authorization", token)
+                )
+                .andExpect(status().isOk())
+                .andExpect(header().string(X_TOTAL_COUNT_HEADER_NAME, "4"))
+                .andExpect(jsonPath("$").value(hasSize(4)))
+                .andExpect(jsonPath("$[0].id").value(fourthId))
+                .andExpect(jsonPath("$[1].id").value(fifthId))
+                .andExpect(jsonPath("$[2].id").value(tenthId))
+                .andExpect(jsonPath("$[3].id").value(eleventhId));
+
+        ///////////////
+
+        mockMvc.perform(
+                        get("/api/tasks")
+                                .queryParam("titleCont", "од")
+                                .queryParam("assigneeId", firstUser.getId() + "")
+                                .queryParam("status", "to_publish")
+                                .queryParam("labelId", thirdLabel + "")
+                                .header("Authorization", token)
+                )
+                .andExpect(status().isOk())
+                .andExpect(header().string(X_TOTAL_COUNT_HEADER_NAME, "1"))
+                .andExpect(jsonPath("$").value(hasSize(1)))
+                .andExpect(jsonPath("$[0].id").value(sixthId));
     }
 
     @Test
