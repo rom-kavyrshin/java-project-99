@@ -194,17 +194,50 @@ public class TaskControllerTest {
         var thirdLabel = labelsList.get(2).getId();
         var fourthLabel = labelsList.get(3).getId();
 
-        var firstId = newTask(1L, "Ремонт стола", "Отремонтировать стол. Заменит столешницу", "to_be_fixed", secondUser.getId(), List.of(fourthLabel));
-        var secondId = newTask(2L, "Прочистить раковину", "Вроде и так все понятно", "to_publish", firstUser.getId(), List.of(thirdLabel, fourthLabel));
-        var thirdId = newTask(null, "Почистить стиральную машину", "Профилактика", "draft", firstUser.getId(), List.of());
-        var fourthId = newTask(null, "Позавтракать", "Плотненький приём пищи", "to_publish", firstUser.getId(), List.of(firstLabel, secondLabel));
-        var fifthId = newTask(null, "Заказать еду", "Ну понятно", "to_publish", secondUser.getId(), List.of(secondLabel, thirdLabel));
-        var sixthId = newTask(null, "Купить одежду", "Освежить свой outfit", "to_publish", firstUser.getId(), List.of(thirdLabel));
-        var seventhId = newTask(null, "Дела", "Дела дела дела", "published", firstUser.getId(), List.of(firstLabel, fourthLabel));
-        var eighthId = newTask(null, "Обед", "Покушать", "published", null, List.of(firstLabel));
-        var ninthId = newTask(null, "Отдых", "Небольшой отдых на кроватке", "published", firstUser.getId(), List.of(fourthLabel));
-        var tenthId = newTask(null, "Снова дела", "Возвращаюсь к делам", "to_review", firstUser.getId(), List.of(secondLabel));
-        var eleventhId = newTask(null, "Продать старый стол", "Есть другой стол. Это не нужен и мешает", "draft", secondUser.getId(), List.of(secondLabel, fourthLabel));
+        var firstId = newTask(
+                1L, "Ремонт стола", "Отремонтировать стол. Заменит столешницу",
+                "to_be_fixed", secondUser.getId(), List.of(fourthLabel)
+        );
+        var secondId = newTask(
+                2L, "Прочистить раковину", "Вроде и так все понятно",
+                "to_publish", firstUser.getId(), List.of(thirdLabel, fourthLabel)
+        );
+        var thirdId = newTask(
+                null, "Почистить стиральную машину", "Профилактика",
+                "draft", firstUser.getId(), List.of()
+        );
+        var fourthId = newTask(
+                null, "Позавтракать", "Плотненький приём пищи",
+                "to_publish", firstUser.getId(), List.of(firstLabel, secondLabel)
+        );
+        var fifthId = newTask(
+                null, "Заказать еду", "Ну понятно",
+                "to_publish", secondUser.getId(), List.of(secondLabel, thirdLabel)
+        );
+        var sixthId = newTask(
+                null, "Купить одежду", "Освежить свой outfit",
+                "to_publish", firstUser.getId(), List.of(thirdLabel)
+        );
+        var seventhId = newTask(
+                null, "Дела", "Дела дела дела",
+                "published", firstUser.getId(), List.of(firstLabel, fourthLabel)
+        );
+        var eighthId = newTask(
+                null, "Обед", "Покушать",
+                "published", null, List.of(firstLabel)
+        );
+        var ninthId = newTask(
+                null, "Отдых", "Небольшой отдых на кроватке",
+                "published", firstUser.getId(), List.of(fourthLabel)
+        );
+        var tenthId = newTask(
+                null, "Снова дела", "Возвращаюсь к делам",
+                "to_review", firstUser.getId(), List.of(secondLabel)
+        );
+        var eleventhId = newTask(
+                null, "Продать старый стол", "Есть другой стол. Это не нужен и мешает",
+                "draft", secondUser.getId(), List.of(secondLabel, fourthLabel)
+        );
 
         mockMvc.perform(
                 get("/api/tasks")
