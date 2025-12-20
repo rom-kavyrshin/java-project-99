@@ -7,6 +7,6 @@ spring:
 
 logging:
   level:
-    org:
-      springframework:
-        security: TRACE
+    root: INFO
+    org.springframework.security: DEBUG
+    hexlet.code: DEBUG
