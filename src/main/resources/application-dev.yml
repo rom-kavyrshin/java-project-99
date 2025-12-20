@@ -10,3 +10,9 @@ logging:
     root: INFO
     org.springframework.security: DEBUG
     hexlet.code: DEBUG
+
+sentry:
+  logging:
+    minimum-event-level: error
+    minimum-breadcrumb-level: debug
+    minimum-level: debug

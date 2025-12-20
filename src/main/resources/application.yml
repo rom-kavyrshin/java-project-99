@@ -19,3 +19,12 @@ rsa:
 springdoc:
   api-docs:
     path: /v3/openapi-docs
+
+sentry:
+  dsn: https://03476986c1b8b324d999d86d6fa0b823@o4510567229423616.ingest.us.sentry.io/4510567232307200
+  # Add data like request headers and IP for users,
+  # see https://docs.sentry.io/platforms/java/guides/spring-boot/data-management/data-collected/ for more info
+  send-default-pii: true
+  # Enable sending logs to Sentry
+  logs:
+    enabled: true

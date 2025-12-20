@@ -6,6 +6,7 @@ plugins {
 	jacoco
 	id("org.sonarqube") version "6.2.0.5505"
 	id("io.freefair.lombok") version "8.14"
+	id("io.sentry.jvm.gradle") version "5.12.2"
 }
 
 group = "hexlet.code"
@@ -28,6 +29,17 @@ sonar {
         property("sonar.organization", "rom-kavyrshin")
         property("sonar.host.url", "https://sonarcloud.io")
     }
+}
+
+sentry {
+	// Generates a JVM (Java, Kotlin, etc.) source bundle and uploads your source code to Sentry.
+	// This enables source context, allowing you to see your source
+	// code as part of your stack traces in Sentry.
+	includeSourceContext = true
+
+	org = "personal-b3m"
+	projectName = "task-manager-hexlet"
+	authToken = System.getenv("SENTRY_AUTH_TOKEN")
 }
 
 configurations {
