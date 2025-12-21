@@ -20,3 +20,9 @@ sentry:
     minimum-event-level: error
     minimum-breadcrumb-level: debug
     minimum-level: debug
+
+
+##########################
+PRIVATE_KEY_PASSWORD: weaKPa55w0rd
+PRIVATE_KEY_SALT: c036d7ae55bcaf25
+DEFAULT_PASSWORD: qwerty
