@@ -8,6 +8,8 @@ spring:
       enabled: always
   application:
     name: "app"
+  profiles:
+    active: dev
 
 default-user:
   password: ${DEFAULT_PASSWORD}
