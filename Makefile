@@ -31,7 +31,12 @@ report:
 	./gradlew jacocoTestReport
 
 image-build:
-	docker build -t rom-kavyrshin/java-project-99 -f Dockerfile .
+	docker build --secret id=sentry_auth_token,src=sentry_auth_token.secret \
+	-t rom-kavyrshin/java-project-99 -f Dockerfile .
+
+image-build-debug:
+	docker build --progress=plain --no-cache --build-arg MY_VAR=somevalue213 \
+	-t rom-kavyrshin/java-project-99 -f Dockerfile .
 
 image-run:
 	docker run -p 7070:7070 --env-file local.env rom-kavyrshin/java-project-99
