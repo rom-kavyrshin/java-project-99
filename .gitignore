@@ -42,9 +42,10 @@ bin/
 ### Mac OS ###
 .DS_Store
 
-### Env ###
+### Env and secrets ###
 *.env
 !general.env
+*.secret
 
 ### Frontend ###
 /node_modules
