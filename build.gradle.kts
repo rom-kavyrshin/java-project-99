@@ -6,7 +6,6 @@ plugins {
 	jacoco
 	id("org.sonarqube") version "6.2.0.5505"
 	id("io.freefair.lombok") version "8.14"
-	id("io.sentry.jvm.gradle") version "5.12.2"
 }
 
 group = "hexlet.code"
@@ -29,17 +28,6 @@ sonar {
         property("sonar.organization", "rom-kavyrshin")
         property("sonar.host.url", "https://sonarcloud.io")
     }
-}
-
-sentry {
-	// Generates a JVM (Java, Kotlin, etc.) source bundle and uploads your source code to Sentry.
-	// This enables source context, allowing you to see your source
-	// code as part of your stack traces in Sentry.
-	includeSourceContext = true
-
-	org = "personal-b3m"
-	projectName = "task-manager-hexlet"
-	authToken = System.getenv("SENTRY_AUTH_TOKEN")
 }
 
 configurations {
@@ -69,6 +57,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-security:3.5.6")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server:3.5.6")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.14")
+	implementation("io.sentry:sentry-spring-boot-starter-jakarta:8.29.0")
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	testImplementation("org.springframework.boot:spring-boot-starter-test:3.5.6")
