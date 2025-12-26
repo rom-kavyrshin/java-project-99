@@ -1,0 +1,145 @@
+package hexlet.code.controllers;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import hexlet.code.ModelGenerator;
+import hexlet.code.dto.user.UserCreateDTO;
+import hexlet.code.dto.user.UserUpdateDTO;
+import hexlet.code.mapper.UserMapper;
+import hexlet.code.repositories.UserRepository;
+import net.datafaker.Faker;
+import org.instancio.Instancio;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.openapitools.jackson.nullable.JsonNullable;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.HashMap;
+
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@SpringBootTest
+@AutoConfigureMockMvc
+public class UserControllerSecurityTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private UserMapper userMapper;
+
+    @Autowired
+    private Faker faker;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @Autowired
+    private ModelGenerator modelGenerator;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    private static String token;
+    private static final int USER_LIST_SIZE = 10;
+    private static final int MIDDLE_OF_THE_LIST = USER_LIST_SIZE / 2;
+
+    private UserCreateDTO testUser;
+    private String testUserPassword;
+
+    @BeforeEach
+    void setupTest() throws Exception {
+        setupMocks();
+        setupToken();
+    }
+
+    @AfterEach
+    void clear() {
+        userRepository.deleteAll();
+    }
+
+    void setupMocks() {
+        for (int i = 0; i < USER_LIST_SIZE; i++) {
+            var user = Instancio.of(modelGenerator.getUserCreateDTOModel()).create();
+            userRepository.save(userMapper.map(user));
+        }
+
+        testUser = Instancio.of(modelGenerator.getUserCreateDTOModel()).create();
+        testUserPassword = testUser.getPassword();
+        userRepository.save(userMapper.map(testUser));
+    }
+
+    void setupToken() throws Exception {
+        HashMap<String, String> loginData = new HashMap<>();
+        loginData.put("username", testUser.getEmail());
+        loginData.put("password", testUserPassword);
+
+        var loginJson = objectMapper.writeValueAsString(loginData);
+
+        var request = post("/api/login").contentType(MediaType.APPLICATION_JSON).content(loginJson);
+
+        var result = mockMvc.perform(request)
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        token = "Bearer " + result;
+    }
+
+    @Test
+    void testUpdateStrangerUserData() throws Exception {
+        var userId = userRepository.findAll().get(MIDDLE_OF_THE_LIST).getId();
+        var userForUpdate = userRepository.findById(userId).orElseThrow();
+
+        var newUserData = new UserUpdateDTO();
+        newUserData.setFirstName(JsonNullable.of("Updated"));
+        newUserData.setLastName(JsonNullable.of("Updated"));
+        newUserData.setEmail(JsonNullable.of("updated@example.com"));
+
+        assertNotEquals(newUserData.getFirstName().get(), userForUpdate.getFirstName());
+        assertNotEquals(newUserData.getLastName().get(), userForUpdate.getLastName());
+        assertNotEquals(newUserData.getEmail().get(), userForUpdate.getEmail());
+
+        var request = put("/api/users/" + userId)
+                .header("Authorization", token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(newUserData));
+
+        mockMvc.perform(request)
+                .andExpect(status().isForbidden());
+
+        userForUpdate = userRepository.findById(userId).orElseThrow();
+
+        assertNotEquals(newUserData.getFirstName().get(), userForUpdate.getFirstName());
+        assertNotEquals(newUserData.getLastName().get(), userForUpdate.getLastName());
+        assertNotEquals(newUserData.getEmail().get(), userForUpdate.getEmail());
+    }
+
+    @Test
+    void testDeleteStrangerUserData() throws Exception {
+        var userId = userRepository.findAll().get(MIDDLE_OF_THE_LIST).getId();
+
+        assertTrue(userRepository.findById(userId).isPresent());
+
+        mockMvc.perform(get("/api/users/" + userId).header("Authorization", token))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(delete("/api/users/" + userId).header("Authorization", token))
+                .andExpect(status().isForbidden());
+
+        assertTrue(userRepository.findById(userId).isPresent());
+    }
+}
