@@ -15,7 +15,7 @@ import org.springframework.http.ResponseEntity;
 class AppApplicationTests {
 
     @Autowired
-    TestRestTemplate testRestTemplate;
+    private TestRestTemplate testRestTemplate;
 
     private static String token;
 
