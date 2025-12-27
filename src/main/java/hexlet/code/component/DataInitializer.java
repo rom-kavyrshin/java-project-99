@@ -28,7 +28,7 @@ public class DataInitializer implements ApplicationRunner {
     private final LabelRepository labelRepository;
     private final LabelMapper labelMapper;
 
-    @Value("${default-user.password}")
+    @Value("${default-user.password:qwerty}")
     private String defaultUserPassword;
 
     public DataInitializer(

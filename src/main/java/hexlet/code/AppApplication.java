@@ -13,7 +13,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 @EnableJpaAuditing
 public class AppApplication {
 
-    @Value("${spring.profiles.active}")
+    @Value("${spring.profiles.active:fallback}")
     private String activeProfile;
 
     public static void main(String[] args) {

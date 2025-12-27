@@ -7,48 +7,31 @@ import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 import hexlet.code.component.RsaKeyProperties;
-import hexlet.code.util.ResourceUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.encrypt.Encryptors;
-import org.springframework.security.crypto.encrypt.TextEncryptor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 
-import java.io.IOException;
-import java.security.KeyFactory;
-import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.util.Base64;
 
-@Profile({"test", "dev", "prod"})
+@Profile({"!test", "!dev", "!prod"})
 @Configuration
-public class EncodersConfig {
+@Conditional(OnMissingProfileCondition.class)
+public class OtherEncodersConfig {
 
     @Value("${rsa.public-key}")
     private RSAPublicKey publicKey;
 
-    @Value("${PRIVATE_KEY_PASSWORD}")
-    private String privateKeyPassword;
-
-    @Value("${PRIVATE_KEY_SALT}")
-    private String privateKeySalt;
-
-    @Value("${rsa.private-key-path}")
-    private String privateKeyPath;
-
-    @Autowired
-    private ResourceUtil resourceUtil;
+    @Value("${rsa.private-key}")
+    private RSAPrivateKey privateKey;
 
     @Bean
     public PasswordEncoder getPasswordEncoder() {
@@ -68,22 +51,7 @@ public class EncodersConfig {
     }
 
     @Bean
-    RsaKeyProperties rsaKeyProperties() throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
-        String encryptedPrivatePem = resourceUtil.readResourceFileAsString(privateKeyPath);
-
-        TextEncryptor decryptor = Encryptors.delux(privateKeyPassword, privateKeySalt);
-        String decryptedPem = decryptor.decrypt(encryptedPrivatePem);
-
-        String cleanPem = decryptedPem
-                .replace("-----BEGIN PRIVATE KEY-----", "")
-                .replace("-----END PRIVATE KEY-----", "")
-                .replaceAll("\\s", "");
-
-        byte[] decoded = Base64.getDecoder().decode(cleanPem);
-        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(decoded);
-        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-        RSAPrivateKey privateKey = (RSAPrivateKey) keyFactory.generatePrivate(keySpec);
-
+    RsaKeyProperties testRsaKeyProperties() {
         return new RsaKeyProperties(publicKey, privateKey);
     }
 }
