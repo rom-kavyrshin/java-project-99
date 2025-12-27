@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:postgresql://dpg-d4j6ve95pdvs7397sdq0-a:5432/${DATABASE_NAME}?password=${DATABASE_PASSWORD}&user=${DATABASE_USERNAME}
+    url: jdbc:postgresql://dpg-d57th8re5dus73ditubg-a:5432/${DATABASE_NAME}?password=${DATABASE_PASSWORD}&user=${DATABASE_USERNAME}
 
 rsa:
   public-key: classpath:certs/prod/public.pem
