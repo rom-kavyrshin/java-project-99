@@ -52,8 +52,10 @@ public class SecurityConfig {
     }
 
     @Bean
+    @SuppressWarnings("deprecation")
     public AuthenticationManager authenticationManager() {
-        var provider = new DaoAuthenticationProvider(userService);
+        var provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(userService);
         provider.setPasswordEncoder(passwordEncoder);
         return new ProviderManager(provider);
     }
