@@ -19,7 +19,7 @@ import java.util.Map;
 public class EncryptionController {
 
     @PostMapping(path = "/encrypt")
-    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseStatus(HttpStatus.OK)
     public Map<String, String> encrypt(@RequestParam String clearText, @RequestParam String password) {
         String generatedSalt = KeyGenerators.string().generateKey();
 
@@ -30,7 +30,7 @@ public class EncryptionController {
     }
 
     @PostMapping(path = "/decrypt")
-    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseStatus(HttpStatus.OK)
     public String decrypt(
             @RequestParam String password,
             @RequestParam String salt,
